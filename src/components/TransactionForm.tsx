@@ -20,13 +20,13 @@ const TransactionForm: React.FC = () => {
     e.preventDefault();
     
     if (!formData.amount || !formData.category || !formData.description) {
-      showToast('Please fill in all required fields', 'error');
+      showToast('Mohon lengkapi semua field yang diperlukan', 'error');
       return;
     }
 
     const amount = parseFloat(formData.amount);
     if (amount <= 0) {
-      showToast('Amount must be greater than zero', 'error');
+      showToast('Jumlah harus lebih besar dari nol', 'error');
       return;
     }
 
@@ -41,7 +41,7 @@ const TransactionForm: React.FC = () => {
         date: formData.date,
       };
 
-      addTransaction(transaction);
+      await addTransaction(transaction);
       
       // Reset form
       setFormData({
@@ -53,11 +53,11 @@ const TransactionForm: React.FC = () => {
       });
       
       showToast(
-        `${formData.type === 'income' ? 'Income' : 'Expense'} added successfully!`, 
+        `${formData.type === 'income' ? 'Pemasukan' : 'Pengeluaran'} berhasil ditambahkan!`, 
         'success'
       );
     } catch (error) {
-      showToast('Failed to add transaction. Please try again.', 'error');
+      showToast('Gagal menambahkan transaksi. Silakan coba lagi.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -74,8 +74,8 @@ const TransactionForm: React.FC = () => {
               <Plus className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Add Transaction</h2>
-              <p className="text-slate-600 text-lg sm:text-base font-medium">Record your income or expenses</p>
+              <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Tambah Transaksi</h2>
+              <p className="text-slate-600 text-lg sm:text-base font-medium">Catat pemasukan atau pengeluaran Anda</p>
             </div>
           </div>
         </div>
@@ -84,7 +84,7 @@ const TransactionForm: React.FC = () => {
           {/* Transaction Type */}
           <div className="fade-in" style={{ animationDelay: '100ms' }}>
             <label className="block text-lg font-bold text-slate-700 mb-6">
-              Transaction Type
+              Jenis Transaksi
             </label>
             <div className="grid grid-cols-2 gap-4">
               <button
@@ -103,7 +103,7 @@ const TransactionForm: React.FC = () => {
                 }`}>
                   <Minus className="w-6 h-6" />
                 </div>
-                <span className="font-bold text-xl">Expense</span>
+                <span className="font-bold text-xl">Pengeluaran</span>
               </button>
               <button
                 type="button"
@@ -121,7 +121,7 @@ const TransactionForm: React.FC = () => {
                 }`}>
                   <Plus className="w-6 h-6" />
                 </div>
-                <span className="font-bold text-xl">Income</span>
+                <span className="font-bold text-xl">Pemasukan</span>
               </button>
             </div>
           </div>
@@ -129,22 +129,22 @@ const TransactionForm: React.FC = () => {
           {/* Amount */}
           <div className="fade-in" style={{ animationDelay: '200ms' }}>
             <label htmlFor="amount" className="block text-lg font-bold text-slate-700 mb-4">
-              Amount
+              Jumlah
             </label>
             <div className="relative">
               <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl">
-                <DollarSign className="text-slate-600 w-6 h-6" />
+                <span className="text-slate-600 font-bold text-lg">Rp</span>
               </div>
               <input
                 type="number"
                 id="amount"
-                step="0.01"
+                step="1000"
                 min="0"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                 className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-2xl font-bold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
-                placeholder="0.00"
-                inputMode="decimal"
+                placeholder="0"
+                inputMode="numeric"
                 required
               />
             </div>
@@ -153,7 +153,7 @@ const TransactionForm: React.FC = () => {
           {/* Category */}
           <div className="fade-in" style={{ animationDelay: '300ms' }}>
             <label htmlFor="category" className="block text-lg font-bold text-slate-700 mb-4">
-              Category
+              Kategori
             </label>
             <div className="relative">
               <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl">
@@ -166,7 +166,7 @@ const TransactionForm: React.FC = () => {
                 className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
                 required
               >
-                <option value="">Select a category</option>
+                <option value="">Pilih kategori</option>
                 {availableCategories.map((category) => (
                   <option key={category.id} value={category.name}>
                     {category.name}
@@ -179,7 +179,7 @@ const TransactionForm: React.FC = () => {
           {/* Description */}
           <div className="fade-in" style={{ animationDelay: '400ms' }}>
             <label htmlFor="description" className="block text-lg font-bold text-slate-700 mb-4">
-              Description
+              Deskripsi
             </label>
             <div className="relative">
               <div className="absolute left-6 top-6 p-2 bg-slate-100 rounded-xl">
@@ -191,7 +191,7 @@ const TransactionForm: React.FC = () => {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
-                placeholder="Enter description..."
+                placeholder="Masukkan deskripsi..."
                 required
               />
             </div>
@@ -200,7 +200,7 @@ const TransactionForm: React.FC = () => {
           {/* Date */}
           <div className="fade-in" style={{ animationDelay: '500ms' }}>
             <label htmlFor="date" className="block text-lg font-bold text-slate-700 mb-4">
-              Date
+              Tanggal
             </label>
             <div className="relative">
               <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl">
@@ -231,10 +231,10 @@ const TransactionForm: React.FC = () => {
               {isSubmitting ? (
                 <div className="flex items-center justify-center space-x-3">
                   <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Adding...</span>
+                  <span>Menambahkan...</span>
                 </div>
               ) : (
-                `Add ${formData.type === 'income' ? 'Income' : 'Expense'}`
+                `Tambah ${formData.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}`
               )}
             </button>
           </div>

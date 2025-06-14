@@ -5,12 +5,28 @@ import { useToast } from '../contexts/ToastContext';
 import { formatCurrency, formatDate } from '../utils/dateUtils';
 
 const TransactionList: React.FC = () => {
-  const { transactions, deleteTransaction } = useBudget();
+  const { transactions, deleteTransaction, loading } = useBudget();
   const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
   const [sortBy, setSortBy] = useState<'date' | 'amount'>('date');
   const [showFilters, setShowFilters] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-slate-200 rounded w-1/3 mb-4"></div>
+          <div className="h-20 bg-slate-200 rounded-3xl mb-6"></div>
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-20 bg-slate-200 rounded-2xl"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const filteredTransactions = transactions
     .filter(transaction => {
@@ -27,10 +43,14 @@ const TransactionList: React.FC = () => {
       }
     });
 
-  const handleDelete = (id: string, description: string) => {
-    if (window.confirm(`Are you sure you want to delete "${description}"?`)) {
-      deleteTransaction(id);
-      showToast('Transaction deleted successfully', 'success');
+  const handleDelete = async (id: string, description: string) => {
+    if (window.confirm(`Apakah Anda yakin ingin menghapus "${description}"?`)) {
+      try {
+        await deleteTransaction(id);
+        showToast('Transaksi berhasil dihapus', 'success');
+      } catch (error) {
+        showToast('Gagal menghapus transaksi', 'error');
+      }
     }
   };
 
@@ -43,8 +63,8 @@ const TransactionList: React.FC = () => {
             <Eye className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Transactions</h2>
-            <p className="text-slate-600 text-lg sm:text-base font-medium">Manage your transaction history</p>
+            <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Riwayat Transaksi</h2>
+            <p className="text-slate-600 text-lg sm:text-base font-medium">Kelola riwayat transaksi Anda</p>
           </div>
         </div>
       </div>
@@ -58,7 +78,7 @@ const TransactionList: React.FC = () => {
           </div>
           <input
             type="text"
-            placeholder="Search transactions..."
+            placeholder="Cari transaksi..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-20 pr-6 py-5 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-medium bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
@@ -72,7 +92,7 @@ const TransactionList: React.FC = () => {
         >
           <div className="flex items-center space-x-3">
             <Filter className="w-5 h-5" />
-            <span>Filters & Sort</span>
+            <span>Filter & Urutkan</span>
           </div>
           <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
         </button>
@@ -85,9 +105,9 @@ const TransactionList: React.FC = () => {
               onChange={(e) => setFilterType(e.target.value as 'all' | 'income' | 'expense')}
               className="w-full sm:w-auto px-6 py-4 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-semibold bg-white/60 backdrop-blur-sm appearance-none cursor-pointer"
             >
-              <option value="all">All Types</option>
-              <option value="income">Income Only</option>
-              <option value="expense">Expenses Only</option>
+              <option value="all">Semua Jenis</option>
+              <option value="income">Pemasukan Saja</option>
+              <option value="expense">Pengeluaran Saja</option>
             </select>
           </div>
 
@@ -97,8 +117,8 @@ const TransactionList: React.FC = () => {
               onChange={(e) => setSortBy(e.target.value as 'date' | 'amount')}
               className="w-full sm:w-auto px-6 py-4 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-semibold bg-white/60 backdrop-blur-sm appearance-none cursor-pointer"
             >
-              <option value="date">Sort by Date</option>
-              <option value="amount">Sort by Amount</option>
+              <option value="date">Urutkan berdasarkan Tanggal</option>
+              <option value="amount">Urutkan berdasarkan Jumlah</option>
             </select>
           </div>
         </div>
@@ -108,7 +128,7 @@ const TransactionList: React.FC = () => {
       <div className="glass-effect rounded-3xl border border-white/20 overflow-hidden fade-in" style={{ animationDelay: '200ms' }}>
         <div className="p-6 sm:p-8 border-b border-white/20 bg-gradient-to-r from-slate-50/50 to-blue-50/50">
           <h3 className="text-2xl font-bold text-slate-800">
-            {filteredTransactions.length} Transaction{filteredTransactions.length !== 1 ? 's' : ''}
+            {filteredTransactions.length} Transaksi
           </h3>
         </div>
 
@@ -117,11 +137,11 @@ const TransactionList: React.FC = () => {
             <div className="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
               <Calendar className="w-12 h-12 text-slate-400" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-700 mb-3">No transactions found</h3>
+            <h3 className="text-2xl font-bold text-slate-700 mb-3">Tidak ada transaksi ditemukan</h3>
             <p className="text-slate-500 text-lg max-w-md mx-auto">
               {searchTerm || filterType !== 'all' 
-                ? 'Try adjusting your search or filters to find what you\'re looking for'
-                : 'Start by adding your first transaction to begin tracking your finances'
+                ? 'Coba sesuaikan pencarian atau filter Anda'
+                : 'Mulai dengan menambahkan transaksi pertama Anda'
               }
             </p>
           </div>
@@ -171,8 +191,8 @@ const TransactionList: React.FC = () => {
                     <button
                       onClick={() => handleDelete(transaction.id, transaction.description)}
                       className="p-3 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all duration-200 button-press focus-ring opacity-0 group-hover:opacity-100"
-                      title="Delete transaction"
-                      aria-label={`Delete ${transaction.description}`}
+                      title="Hapus transaksi"
+                      aria-label={`Hapus ${transaction.description}`}
                     >
                       <Trash2 className="w-6 h-6" />
                     </button>

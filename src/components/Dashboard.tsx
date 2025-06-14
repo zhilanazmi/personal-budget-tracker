@@ -4,7 +4,22 @@ import { formatCurrency, getDateRange } from '../utils/dateUtils';
 import { useBudget } from '../hooks/useBudget';
 
 const Dashboard: React.FC = () => {
-  const { getReportData } = useBudget();
+  const { getReportData, loading } = useBudget();
+  
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-slate-200 rounded w-1/3 mb-4"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-40 bg-slate-200 rounded-3xl"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   const todayData = getReportData(getDateRange('today'));
   const monthData = getReportData(getDateRange('month'));
@@ -82,7 +97,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div>
             <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Dashboard</h2>
-            <p className="text-slate-600 text-lg sm:text-base font-medium">Your financial overview at a glance</p>
+            <p className="text-slate-600 text-lg sm:text-base font-medium">Ringkasan keuangan Anda</p>
           </div>
         </div>
       </div>
@@ -90,14 +105,14 @@ const Dashboard: React.FC = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Current Balance"
+          title="Saldo Saat Ini"
           amount={yearData.balance}
           icon={DollarSign}
           color={yearData.balance >= 0 ? 'green' : 'red'}
           delay={0}
         />
         <StatCard
-          title="Monthly Income"
+          title="Pemasukan Bulan Ini"
           amount={monthData.totalIncome}
           icon={TrendingUp}
           color="green"
@@ -105,7 +120,7 @@ const Dashboard: React.FC = () => {
           delay={100}
         />
         <StatCard
-          title="Monthly Expenses"
+          title="Pengeluaran Bulan Ini"
           amount={monthData.totalExpenses}
           icon={TrendingDown}
           color="red"
@@ -113,7 +128,7 @@ const Dashboard: React.FC = () => {
           delay={200}
         />
         <StatCard
-          title="Today's Spending"
+          title="Pengeluaran Hari Ini"
           amount={todayData.totalExpenses}
           icon={CreditCard}
           color="purple"
@@ -130,7 +145,7 @@ const Dashboard: React.FC = () => {
               <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
                 <CreditCard className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-800">Recent Activity</h3>
+              <h3 className="text-2xl font-bold text-slate-800">Aktivitas Terbaru</h3>
             </div>
             <button className="p-2 hover:bg-white/50 rounded-xl transition-colors duration-200 focus-ring">
               <ArrowRight className="w-5 h-5 text-slate-500" />
@@ -142,8 +157,8 @@ const Dashboard: React.FC = () => {
               <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <CreditCard className="w-10 h-10 text-slate-400" />
               </div>
-              <h4 className="text-xl font-semibold text-slate-700 mb-2">No transactions yet</h4>
-              <p className="text-slate-500 text-lg">Add your first transaction to get started</p>
+              <h4 className="text-xl font-semibold text-slate-700 mb-2">Belum ada transaksi</h4>
+              <p className="text-slate-500 text-lg">Tambahkan transaksi pertama Anda</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -188,7 +203,7 @@ const Dashboard: React.FC = () => {
               <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg">
                 <BarChart3 className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-800">Top Categories</h3>
+              <h3 className="text-2xl font-bold text-slate-800">Kategori Teratas</h3>
             </div>
             <button className="p-2 hover:bg-white/50 rounded-xl transition-colors duration-200 focus-ring">
               <ArrowRight className="w-5 h-5 text-slate-500" />
@@ -200,8 +215,8 @@ const Dashboard: React.FC = () => {
               <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <BarChart3 className="w-10 h-10 text-slate-400" />
               </div>
-              <h4 className="text-xl font-semibold text-slate-700 mb-2">No spending data</h4>
-              <p className="text-slate-500 text-lg">Start tracking expenses to see insights</p>
+              <h4 className="text-xl font-semibold text-slate-700 mb-2">Belum ada data pengeluaran</h4>
+              <p className="text-slate-500 text-lg">Mulai catat pengeluaran untuk melihat insight</p>
             </div>
           ) : (
             <div className="space-y-5">

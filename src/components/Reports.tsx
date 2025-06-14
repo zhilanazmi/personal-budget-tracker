@@ -5,13 +5,30 @@ import { formatCurrency, getDateRange, formatDate } from '../utils/dateUtils';
 import { DateRange } from '../types';
 
 const Reports: React.FC = () => {
-  const { getReportData, categories } = useBudget();
+  const { getReportData, categories, loading } = useBudget();
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month' | 'year' | 'custom'>('month');
   const [customRange, setCustomRange] = useState<DateRange>({
     from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     to: new Date().toISOString().split('T')[0],
   });
   const [showCustomRange, setShowCustomRange] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-slate-200 rounded w-1/3 mb-4"></div>
+          <div className="h-40 bg-slate-200 rounded-3xl mb-6"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-32 bg-slate-200 rounded-3xl"></div>
+            ))}
+          </div>
+          <div className="h-96 bg-slate-200 rounded-3xl"></div>
+        </div>
+      </div>
+    );
+  }
 
   const getDateRangeForPeriod = () => {
     if (selectedPeriod === 'custom') {
@@ -78,10 +95,10 @@ const Reports: React.FC = () => {
 
   const getPeriodLabel = () => {
     switch (selectedPeriod) {
-      case 'today': return 'Today';
-      case 'week': return 'This Week';
-      case 'month': return 'This Month';
-      case 'year': return 'This Year';
+      case 'today': return 'Hari Ini';
+      case 'week': return 'Minggu Ini';
+      case 'month': return 'Bulan Ini';
+      case 'year': return 'Tahun Ini';
       case 'custom': return `${formatDate(customRange.from)} - ${formatDate(customRange.to)}`;
       default: return '';
     }
@@ -96,8 +113,8 @@ const Reports: React.FC = () => {
             <BarChart3 className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Reports</h2>
-            <p className="text-slate-600 text-lg sm:text-base font-medium">Analyze your spending patterns and trends</p>
+            <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Laporan</h2>
+            <p className="text-slate-600 text-lg sm:text-base font-medium">Analisis pola pengeluaran dan tren keuangan</p>
           </div>
         </div>
       </div>
@@ -107,23 +124,32 @@ const Reports: React.FC = () => {
         <div className="space-y-6">
           {/* Quick Period Buttons */}
           <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4">
-            {(['today', 'week', 'month', 'year'] as const).map((period, index) => (
-              <button
-                key={period}
-                onClick={() => {
-                  setSelectedPeriod(period);
-                  setShowCustomRange(false);
-                }}
-                className={`px-6 py-4 rounded-2xl font-bold transition-all duration-300 button-press focus-ring ${
-                  selectedPeriod === period
-                    ? 'bg-gradient-to-r from-emerald-500 to-blue-600 text-white shadow-lg shadow-emerald-500/30'
-                    : 'bg-white/60 text-slate-600 border-2 border-slate-200 hover:bg-white/80 hover:border-slate-300'
-                }`}
-                style={{ animationDelay: `${200 + index * 50}ms` }}
-              >
-                {period.charAt(0).toUpperCase() + period.slice(1)}
-              </button>
-            ))}
+            {(['today', 'week', 'month', 'year'] as const).map((period, index) => {
+              const labels = {
+                today: 'Hari Ini',
+                week: 'Minggu',
+                month: 'Bulan',
+                year: 'Tahun'
+              };
+              
+              return (
+                <button
+                  key={period}
+                  onClick={() => {
+                    setSelectedPeriod(period);
+                    setShowCustomRange(false);
+                  }}
+                  className={`px-6 py-4 rounded-2xl font-bold transition-all duration-300 button-press focus-ring ${
+                    selectedPeriod === period
+                      ? 'bg-gradient-to-r from-emerald-500 to-blue-600 text-white shadow-lg shadow-emerald-500/30'
+                      : 'bg-white/60 text-slate-600 border-2 border-slate-200 hover:bg-white/80 hover:border-slate-300'
+                  }`}
+                  style={{ animationDelay: `${200 + index * 50}ms` }}
+                >
+                  {labels[period]}
+                </button>
+              );
+            })}
           </div>
 
           {/* Custom Range Toggle */}
@@ -138,7 +164,7 @@ const Reports: React.FC = () => {
                 : 'bg-white/60 text-slate-600 border-2 border-slate-200 hover:bg-white/80 hover:border-slate-300'
             }`}
           >
-            <span>Custom Range</span>
+            <span>Rentang Kustom</span>
             <ChevronDown className={`w-5 h-5 ml-3 transition-transform duration-200 ${showCustomRange ? 'rotate-180' : ''}`} />
           </button>
 
@@ -146,7 +172,7 @@ const Reports: React.FC = () => {
           {showCustomRange && selectedPeriod === 'custom' && (
             <div className="space-y-4 sm:space-y-0 sm:flex sm:items-end sm:space-x-6 pt-6 border-t border-white/20 slide-in">
               <div className="flex-1">
-                <label className="block text-lg font-bold text-slate-700 mb-3">From</label>
+                <label className="block text-lg font-bold text-slate-700 mb-3">Dari</label>
                 <input
                   type="date"
                   value={customRange.from}
@@ -155,7 +181,7 @@ const Reports: React.FC = () => {
                 />
               </div>
               <div className="flex-1">
-                <label className="block text-lg font-bold text-slate-700 mb-3">To</label>
+                <label className="block text-lg font-bold text-slate-700 mb-3">Sampai</label>
                 <input
                   type="date"
                   value={customRange.to}
@@ -177,7 +203,7 @@ const Reports: React.FC = () => {
             </div>
           </div>
           <div>
-            <p className="text-lg font-bold text-slate-600 mb-3 uppercase tracking-wide">Total Income</p>
+            <p className="text-lg font-bold text-slate-600 mb-3 uppercase tracking-wide">Total Pemasukan</p>
             <p className="text-4xl font-bold text-emerald-600 tracking-tight">{formatCurrency(reportData.totalIncome)}</p>
           </div>
         </div>
@@ -189,7 +215,7 @@ const Reports: React.FC = () => {
             </div>
           </div>
           <div>
-            <p className="text-lg font-bold text-slate-600 mb-3 uppercase tracking-wide">Total Expenses</p>
+            <p className="text-lg font-bold text-slate-600 mb-3 uppercase tracking-wide">Total Pengeluaran</p>
             <p className="text-4xl font-bold text-red-600 tracking-tight">{formatCurrency(reportData.totalExpenses)}</p>
           </div>
         </div>
@@ -205,7 +231,7 @@ const Reports: React.FC = () => {
             </div>
           </div>
           <div>
-            <p className="text-lg font-bold text-slate-600 mb-3 uppercase tracking-wide">Net Balance</p>
+            <p className="text-lg font-bold text-slate-600 mb-3 uppercase tracking-wide">Saldo Bersih</p>
             <p className={`text-4xl font-bold tracking-tight ${
               reportData.balance >= 0 ? 'text-emerald-600' : 'text-red-600'
             }`}>
@@ -222,7 +248,7 @@ const Reports: React.FC = () => {
             <PieChart className="w-8 h-8 text-white" />
           </div>
           <h3 className="text-3xl font-bold text-slate-800">
-            Expense Breakdown - {getPeriodLabel()}
+            Rincian Pengeluaran - {getPeriodLabel()}
           </h3>
         </div>
 
@@ -231,8 +257,8 @@ const Reports: React.FC = () => {
             <div className="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
               <PieChart className="w-12 h-12 text-slate-400" />
             </div>
-            <h4 className="text-2xl font-bold text-slate-700 mb-3">No expenses found</h4>
-            <p className="text-slate-500 text-lg max-w-md mx-auto">No expense data available for the selected period</p>
+            <h4 className="text-2xl font-bold text-slate-700 mb-3">Tidak ada pengeluaran ditemukan</h4>
+            <p className="text-slate-500 text-lg max-w-md mx-auto">Tidak ada data pengeluaran untuk periode yang dipilih</p>
           </div>
         ) : (
           <CategoryChart />
