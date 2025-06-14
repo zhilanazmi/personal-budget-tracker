@@ -6,6 +6,8 @@ import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
 import Reports from './components/Reports';
 import Settings from './components/Settings';
+import Toast from './components/Toast';
+import { ToastProvider } from './contexts/ToastContext';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -43,64 +45,74 @@ function App() {
   }, [sidebarOpen]);
 
   const renderContent = () => {
-    switch (activeTab) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'add':
-        return <TransactionForm />;
-      case 'transactions':
-        return <TransactionList />;
-      case 'reports':
-        return <Reports />;
-      case 'settings':
-        return <Settings />;
-      default:
-        return <Dashboard />;
-    }
+    const contentMap = {
+      dashboard: <Dashboard />,
+      add: <TransactionForm />,
+      transactions: <TransactionList />,
+      reports: <Reports />,
+      settings: <Settings />,
+    };
+    
+    return contentMap[activeTab as keyof typeof contentMap] || <Dashboard />;
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+    <ToastProvider>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
+        {/* Mobile Sidebar Overlay */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity duration-300"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
 
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
-        <Sidebar activeTab={activeTab} onTabChange={handleTabChange} onClose={() => setSidebarOpen(false)} />
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile Header */}
-        <div className="lg:hidden bg-white shadow-sm border-b border-gray-200 px-4 py-4 sticky top-0 z-30">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="p-3 rounded-xl text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-200"
-              aria-label="Open navigation menu"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-            <h1 className="text-xl font-bold text-gray-900">BudgetTracker</h1>
-            <div className="w-12" /> {/* Spacer for centering */}
-          </div>
+        {/* Sidebar */}
+        <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-out lg:relative lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
+          <Sidebar 
+            activeTab={activeTab} 
+            onTabChange={handleTabChange} 
+            onClose={() => setSidebarOpen(false)} 
+          />
         </div>
 
-        {/* Content Area */}
-        <main className="flex-1 p-4 sm:p-6 overflow-y-auto">
-          <div className="max-w-7xl mx-auto">
-            {renderContent()}
-          </div>
-        </main>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Mobile Header */}
+          <header className="lg:hidden glass-effect shadow-sm border-b border-white/20 px-4 py-4 sticky top-0 z-30">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="p-3 rounded-2xl text-slate-600 hover:text-slate-800 hover:bg-white/50 focus-ring transition-all duration-200 button-press"
+                aria-label="Open navigation menu"
+                aria-expanded={sidebarOpen}
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                BudgetTracker
+              </h1>
+              <div className="w-12" aria-hidden="true" />
+            </div>
+          </header>
+
+          {/* Content Area */}
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+            <div className="max-w-7xl mx-auto">
+              <div className="slide-in">
+                {renderContent()}
+              </div>
+            </div>
+          </main>
+        </div>
+
+        {/* Toast Container */}
+        <Toast />
       </div>
-    </div>
+    </ToastProvider>
   );
 }
 

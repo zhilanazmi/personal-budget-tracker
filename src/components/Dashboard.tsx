@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowRight, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowRight, BarChart3, Sparkles } from 'lucide-react';
 import { formatCurrency, getDateRange } from '../utils/dateUtils';
 import { useBudget } from '../hooks/useBudget';
 
@@ -15,34 +15,54 @@ const Dashboard: React.FC = () => {
     amount, 
     icon: Icon, 
     trend, 
-    color = 'blue' 
+    color = 'blue',
+    delay = 0
   }: {
     title: string;
     amount: number;
     icon: any;
     trend?: string;
     color?: string;
+    delay?: number;
   }) => {
     const colorClasses = {
-      blue: 'bg-blue-50 text-blue-600 border-blue-200',
-      green: 'bg-emerald-50 text-emerald-600 border-emerald-200',
-      red: 'bg-red-50 text-red-600 border-red-200',
-      purple: 'bg-purple-50 text-purple-600 border-purple-200',
+      blue: 'from-blue-500 to-blue-600 shadow-blue-500/25',
+      green: 'from-emerald-500 to-emerald-600 shadow-emerald-500/25',
+      red: 'from-red-500 to-red-600 shadow-red-500/25',
+      purple: 'from-purple-500 to-purple-600 shadow-purple-500/25',
+    };
+
+    const bgClasses = {
+      blue: 'bg-blue-50 border-blue-100',
+      green: 'bg-emerald-50 border-emerald-100',
+      red: 'bg-red-50 border-red-100',
+      purple: 'bg-purple-50 border-purple-100',
     };
 
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200 active:scale-95">
-        <div className="flex items-center justify-between mb-4">
-          <div className={`p-3 rounded-xl ${colorClasses[color as keyof typeof colorClasses]}`}>
-            <Icon className="w-6 h-6" />
+      <div 
+        className="glass-effect rounded-3xl p-6 card-hover fade-in border border-white/20"
+        style={{ animationDelay: `${delay}ms` }}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div className={`p-4 rounded-2xl ${bgClasses[color as keyof typeof bgClasses]} relative overflow-hidden`}>
+            <Icon className="w-7 h-7 text-slate-700 relative z-10" />
+            <div className="absolute inset-0 bg-gradient-to-br opacity-10 from-white to-transparent" />
           </div>
           {trend && (
-            <span className="text-sm text-gray-500 font-medium bg-gray-50 px-2 py-1 rounded-lg">{trend}</span>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 pulse-ring" />
+              <span className="text-sm font-semibold text-slate-600 bg-white/60 px-3 py-1.5 rounded-full border border-white/40">
+                {trend}
+              </span>
+            </div>
           )}
         </div>
         <div>
-          <p className="text-sm font-medium text-gray-600 mb-2">{title}</p>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{formatCurrency(amount)}</p>
+          <p className="text-sm font-semibold text-slate-600 mb-3 uppercase tracking-wide">{title}</p>
+          <p className="text-3xl sm:text-4xl font-bold text-slate-800 tracking-tight">
+            {formatCurrency(amount)}
+          </p>
         </div>
       </div>
     );
@@ -53,78 +73,108 @@ const Dashboard: React.FC = () => {
     .slice(0, 5);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="text-center sm:text-left">
-        <h2 className="text-3xl sm:text-2xl font-bold text-gray-900 mb-2">Dashboard</h2>
-        <p className="text-gray-600 text-lg sm:text-base">Welcome back! Here's your financial overview.</p>
+      <div className="text-center sm:text-left fade-in">
+        <div className="flex items-center space-x-3 justify-center sm:justify-start mb-4">
+          <div className="p-3 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-2xl shadow-lg">
+            <Sparkles className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Dashboard</h2>
+            <p className="text-slate-600 text-lg sm:text-base font-medium">Your financial overview at a glance</p>
+          </div>
+        </div>
       </div>
 
-      {/* Stats Grid - Mobile First */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Current Balance"
           amount={yearData.balance}
           icon={DollarSign}
           color={yearData.balance >= 0 ? 'green' : 'red'}
+          delay={0}
         />
         <StatCard
-          title="This Month Income"
+          title="Monthly Income"
           amount={monthData.totalIncome}
           icon={TrendingUp}
           color="green"
           trend="+2.1%"
+          delay={100}
         />
         <StatCard
-          title="This Month Expenses"
+          title="Monthly Expenses"
           amount={monthData.totalExpenses}
           icon={TrendingDown}
           color="red"
           trend="-5.4%"
+          delay={200}
         />
         <StatCard
           title="Today's Spending"
           amount={todayData.totalExpenses}
           icon={CreditCard}
           color="purple"
+          delay={300}
         />
       </div>
 
-      {/* Quick Overview - Stacked on Mobile */}
-      <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
+      {/* Quick Overview */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recent Transactions */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-gray-900">Recent Transactions</h3>
-            <ArrowRight className="w-5 h-5 text-gray-400" />
+        <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '400ms' }}>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
+                <CreditCard className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800">Recent Activity</h3>
+            </div>
+            <button className="p-2 hover:bg-white/50 rounded-xl transition-colors duration-200 focus-ring">
+              <ArrowRight className="w-5 h-5 text-slate-500" />
+            </button>
           </div>
           
           {monthData.transactions.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CreditCard className="w-8 h-8 text-gray-400" />
+            <div className="text-center py-12">
+              <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <CreditCard className="w-10 h-10 text-slate-400" />
               </div>
-              <p className="text-gray-500">No transactions yet</p>
-              <p className="text-sm text-gray-400 mt-1">Add your first transaction to get started</p>
+              <h4 className="text-xl font-semibold text-slate-700 mb-2">No transactions yet</h4>
+              <p className="text-slate-500 text-lg">Add your first transaction to get started</p>
             </div>
           ) : (
             <div className="space-y-4">
-              {monthData.transactions.slice(0, 5).map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+              {monthData.transactions.slice(0, 5).map((transaction, index) => (
+                <div 
+                  key={transaction.id} 
+                  className="flex items-center justify-between p-4 hover:bg-white/40 rounded-2xl transition-all duration-200 border border-transparent hover:border-white/40"
+                  style={{ animationDelay: `${500 + index * 50}ms` }}
+                >
                   <div className="flex items-center space-x-4">
-                    <div className={`w-3 h-3 rounded-full ${
-                      transaction.type === 'income' ? 'bg-emerald-400' : 'bg-red-400'
-                    }`}></div>
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm ${
+                      transaction.type === 'income' 
+                        ? 'bg-gradient-to-br from-emerald-400 to-emerald-500' 
+                        : 'bg-gradient-to-br from-red-400 to-red-500'
+                    }`}>
+                      <span className="text-white font-bold text-lg">
+                        {transaction.type === 'income' ? '+' : '-'}
+                      </span>
+                    </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-gray-900 truncate">{transaction.description}</p>
-                      <p className="text-sm text-gray-500">{transaction.category}</p>
+                      <p className="font-semibold text-slate-800 truncate text-lg">{transaction.description}</p>
+                      <p className="text-slate-500 font-medium">{transaction.category}</p>
                     </div>
                   </div>
-                  <span className={`font-bold text-lg ${
-                    transaction.type === 'income' ? 'text-emerald-600' : 'text-red-600'
-                  }`}>
-                    {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
-                  </span>
+                  <div className="text-right">
+                    <span className={`font-bold text-xl ${
+                      transaction.type === 'income' ? 'text-emerald-600' : 'text-red-600'
+                    }`}>
+                      {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -132,33 +182,44 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Top Spending Categories */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-gray-900">Top Categories</h3>
-            <ArrowRight className="w-5 h-5 text-gray-400" />
+        <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '500ms' }}>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg">
+                <BarChart3 className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800">Top Categories</h3>
+            </div>
+            <button className="p-2 hover:bg-white/50 rounded-xl transition-colors duration-200 focus-ring">
+              <ArrowRight className="w-5 h-5 text-slate-500" />
+            </button>
           </div>
           
           {topCategories.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BarChart3 className="w-8 h-8 text-gray-400" />
+            <div className="text-center py-12">
+              <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <BarChart3 className="w-10 h-10 text-slate-400" />
               </div>
-              <p className="text-gray-500">No spending data</p>
-              <p className="text-sm text-gray-400 mt-1">Start tracking expenses to see insights</p>
+              <h4 className="text-xl font-semibold text-slate-700 mb-2">No spending data</h4>
+              <p className="text-slate-500 text-lg">Start tracking expenses to see insights</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {topCategories.map(([category, amount], index) => (
-                <div key={category} className="flex items-center justify-between py-2">
+                <div 
+                  key={category} 
+                  className="flex items-center justify-between p-4 hover:bg-white/40 rounded-2xl transition-all duration-200"
+                  style={{ animationDelay: `${600 + index * 50}ms` }}
+                >
                   <div className="flex items-center space-x-4">
-                    <span className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-sm font-bold text-gray-600">
+                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-sm">
                       {index + 1}
-                    </span>
-                    <span className="font-medium text-gray-900">{category}</span>
+                    </div>
+                    <span className="font-semibold text-slate-800 text-lg">{category}</span>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-gray-900">{formatCurrency(amount)}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="font-bold text-slate-800 text-xl">{formatCurrency(amount)}</p>
+                    <p className="text-sm text-slate-500 font-medium">
                       {((amount / monthData.totalExpenses) * 100).toFixed(1)}%
                     </p>
                   </div>

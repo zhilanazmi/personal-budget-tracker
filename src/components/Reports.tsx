@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, TrendingUp, PieChart, ChevronDown } from 'lucide-react';
+import { Calendar, TrendingUp, PieChart, ChevronDown, BarChart3 } from 'lucide-react';
 import { useBudget } from '../hooks/useBudget';
 import { formatCurrency, getDateRange, formatDate } from '../utils/dateUtils';
 import { DateRange } from '../types';
@@ -36,26 +36,37 @@ const Reports: React.FC = () => {
       .sort((a, b) => b.amount - a.amount);
 
     return (
-      <div className="space-y-4">
-        {categoryData.map(({ category, amount, percentage, color }) => (
-          <div key={category} className="space-y-3">
+      <div className="space-y-6">
+        {categoryData.map(({ category, amount, percentage, color }, index) => (
+          <div 
+            key={category} 
+            className="space-y-4 fade-in"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
             <div className="flex justify-between items-center">
-              <span className="text-base font-medium text-gray-700">{category}</span>
+              <div className="flex items-center space-x-4">
+                <div 
+                  className="w-6 h-6 rounded-full shadow-sm"
+                  style={{ backgroundColor: color }}
+                />
+                <span className="text-lg font-bold text-slate-700">{category}</span>
+              </div>
               <div className="text-right">
-                <span className="text-lg font-bold text-gray-900">
+                <span className="text-2xl font-bold text-slate-800">
                   {formatCurrency(amount)}
                 </span>
-                <span className="text-sm text-gray-500 ml-2 block sm:inline">
+                <span className="text-lg text-slate-500 ml-3 block sm:inline">
                   {percentage.toFixed(1)}%
                 </span>
               </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
+            <div className="w-full bg-slate-200 rounded-full h-4 overflow-hidden">
               <div
-                className="h-3 rounded-full transition-all duration-500"
+                className="h-4 rounded-full transition-all duration-1000 ease-out shadow-sm"
                 style={{
                   width: `${percentage}%`,
                   backgroundColor: color,
+                  animationDelay: `${index * 100 + 500}ms`,
                 }}
               />
             </div>
@@ -77,30 +88,38 @@ const Reports: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="text-center sm:text-left">
-        <h2 className="text-3xl sm:text-2xl font-bold text-gray-900 mb-2">Reports</h2>
-        <p className="text-gray-600 text-lg sm:text-base">Analyze your spending patterns and trends</p>
+      <div className="text-center sm:text-left fade-in">
+        <div className="flex items-center space-x-4 justify-center sm:justify-start mb-4">
+          <div className="p-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-lg">
+            <BarChart3 className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Reports</h2>
+            <p className="text-slate-600 text-lg sm:text-base font-medium">Analyze your spending patterns and trends</p>
+          </div>
+        </div>
       </div>
 
       {/* Period Selection */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6">
-        <div className="space-y-4">
+      <div className="glass-effect rounded-3xl p-6 sm:p-8 border border-white/20 fade-in" style={{ animationDelay: '100ms' }}>
+        <div className="space-y-6">
           {/* Quick Period Buttons */}
-          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
-            {(['today', 'week', 'month', 'year'] as const).map((period) => (
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4">
+            {(['today', 'week', 'month', 'year'] as const).map((period, index) => (
               <button
                 key={period}
                 onClick={() => {
                   setSelectedPeriod(period);
                   setShowCustomRange(false);
                 }}
-                className={`px-4 py-3 rounded-xl font-semibold transition-all duration-200 active:scale-95 ${
+                className={`px-6 py-4 rounded-2xl font-bold transition-all duration-300 button-press focus-ring ${
                   selectedPeriod === period
-                    ? 'bg-emerald-100 text-emerald-700 border-2 border-emerald-300 shadow-sm'
-                    : 'bg-gray-50 text-gray-600 border-2 border-gray-200 hover:bg-gray-100'
+                    ? 'bg-gradient-to-r from-emerald-500 to-blue-600 text-white shadow-lg shadow-emerald-500/30'
+                    : 'bg-white/60 text-slate-600 border-2 border-slate-200 hover:bg-white/80 hover:border-slate-300'
                 }`}
+                style={{ animationDelay: `${200 + index * 50}ms` }}
               >
                 {period.charAt(0).toUpperCase() + period.slice(1)}
               </button>
@@ -113,35 +132,35 @@ const Reports: React.FC = () => {
               setSelectedPeriod('custom');
               setShowCustomRange(!showCustomRange);
             }}
-            className={`w-full sm:w-auto flex items-center justify-between px-4 py-3 rounded-xl font-semibold transition-all duration-200 active:scale-95 ${
+            className={`w-full sm:w-auto flex items-center justify-between px-6 py-4 rounded-2xl font-bold transition-all duration-300 button-press focus-ring ${
               selectedPeriod === 'custom'
-                ? 'bg-emerald-100 text-emerald-700 border-2 border-emerald-300 shadow-sm'
-                : 'bg-gray-50 text-gray-600 border-2 border-gray-200 hover:bg-gray-100'
+                ? 'bg-gradient-to-r from-emerald-500 to-blue-600 text-white shadow-lg shadow-emerald-500/30'
+                : 'bg-white/60 text-slate-600 border-2 border-slate-200 hover:bg-white/80 hover:border-slate-300'
             }`}
           >
             <span>Custom Range</span>
-            <ChevronDown className={`w-5 h-5 ml-2 transition-transform ${showCustomRange ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-5 h-5 ml-3 transition-transform duration-200 ${showCustomRange ? 'rotate-180' : ''}`} />
           </button>
 
           {/* Custom Date Range Inputs */}
           {showCustomRange && selectedPeriod === 'custom' && (
-            <div className="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:space-x-4 pt-4 border-t border-gray-200">
+            <div className="space-y-4 sm:space-y-0 sm:flex sm:items-end sm:space-x-6 pt-6 border-t border-white/20 slide-in">
               <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">From</label>
+                <label className="block text-lg font-bold text-slate-700 mb-3">From</label>
                 <input
                   type="date"
                   value={customRange.from}
                   onChange={(e) => setCustomRange({ ...customRange, from: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
+                  className="w-full px-6 py-4 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-semibold bg-white/60 backdrop-blur-sm input-focus"
                 />
               </div>
               <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">To</label>
+                <label className="block text-lg font-bold text-slate-700 mb-3">To</label>
                 <input
                   type="date"
                   value={customRange.to}
                   onChange={(e) => setCustomRange({ ...customRange, to: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
+                  className="w-full px-6 py-4 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-semibold bg-white/60 backdrop-blur-sm input-focus"
                 />
               </div>
             </div>
@@ -149,45 +168,45 @@ const Reports: React.FC = () => {
         </div>
       </div>
 
-      {/* Summary Cards - Mobile Optimized */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-emerald-100 rounded-xl">
-              <TrendingUp className="w-6 h-6 text-emerald-600" />
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '200ms' }}>
+          <div className="flex items-center justify-between mb-6">
+            <div className="p-4 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl shadow-lg">
+              <TrendingUp className="w-8 h-8 text-white" />
             </div>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-600 mb-2">Total Income</p>
-            <p className="text-2xl sm:text-3xl font-bold text-emerald-600">{formatCurrency(reportData.totalIncome)}</p>
+            <p className="text-lg font-bold text-slate-600 mb-3 uppercase tracking-wide">Total Income</p>
+            <p className="text-4xl font-bold text-emerald-600 tracking-tight">{formatCurrency(reportData.totalIncome)}</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-red-100 rounded-xl">
-              <TrendingUp className="w-6 h-6 text-red-600 transform rotate-180" />
+        <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '300ms' }}>
+          <div className="flex items-center justify-between mb-6">
+            <div className="p-4 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl shadow-lg">
+              <TrendingUp className="w-8 h-8 text-white transform rotate-180" />
             </div>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-600 mb-2">Total Expenses</p>
-            <p className="text-2xl sm:text-3xl font-bold text-red-600">{formatCurrency(reportData.totalExpenses)}</p>
+            <p className="text-lg font-bold text-slate-600 mb-3 uppercase tracking-wide">Total Expenses</p>
+            <p className="text-4xl font-bold text-red-600 tracking-tight">{formatCurrency(reportData.totalExpenses)}</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className={`p-3 rounded-xl ${
-              reportData.balance >= 0 ? 'bg-emerald-100' : 'bg-red-100'
+        <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '400ms' }}>
+          <div className="flex items-center justify-between mb-6">
+            <div className={`p-4 rounded-2xl shadow-lg ${
+              reportData.balance >= 0 
+                ? 'bg-gradient-to-br from-emerald-500 to-green-600' 
+                : 'bg-gradient-to-br from-red-500 to-pink-600'
             }`}>
-              <Calendar className={`w-6 h-6 ${
-                reportData.balance >= 0 ? 'text-emerald-600' : 'text-red-600'
-              }`} />
+              <Calendar className="w-8 h-8 text-white" />
             </div>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-600 mb-2">Net Balance</p>
-            <p className={`text-2xl sm:text-3xl font-bold ${
+            <p className="text-lg font-bold text-slate-600 mb-3 uppercase tracking-wide">Net Balance</p>
+            <p className={`text-4xl font-bold tracking-tight ${
               reportData.balance >= 0 ? 'text-emerald-600' : 'text-red-600'
             }`}>
               {formatCurrency(reportData.balance)}
@@ -197,21 +216,23 @@ const Reports: React.FC = () => {
       </div>
 
       {/* Category Breakdown */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center space-x-3 mb-6">
-          <PieChart className="w-6 h-6 text-gray-600" />
-          <h3 className="text-xl font-semibold text-gray-900">
+      <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '500ms' }}>
+        <div className="flex items-center space-x-4 mb-8">
+          <div className="p-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg">
+            <PieChart className="w-8 h-8 text-white" />
+          </div>
+          <h3 className="text-3xl font-bold text-slate-800">
             Expense Breakdown - {getPeriodLabel()}
           </h3>
         </div>
 
         {reportData.totalExpenses === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <PieChart className="w-10 h-10 text-gray-400" />
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+              <PieChart className="w-12 h-12 text-slate-400" />
             </div>
-            <h4 className="text-xl font-medium text-gray-900 mb-2">No expenses found</h4>
-            <p className="text-gray-500 text-lg">No expense data available for the selected period</p>
+            <h4 className="text-2xl font-bold text-slate-700 mb-3">No expenses found</h4>
+            <p className="text-slate-500 text-lg max-w-md mx-auto">No expense data available for the selected period</p>
           </div>
         ) : (
           <CategoryChart />
