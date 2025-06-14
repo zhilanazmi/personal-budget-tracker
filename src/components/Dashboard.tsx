@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign, CreditCard } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowRight } from 'lucide-react';
 import { formatCurrency, getDateRange } from '../utils/dateUtils';
 import { useBudget } from '../hooks/useBudget';
 
@@ -31,18 +31,18 @@ const Dashboard: React.FC = () => {
     };
 
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200 active:scale-95">
         <div className="flex items-center justify-between mb-4">
-          <div className={`p-3 rounded-lg ${colorClasses[color as keyof typeof colorClasses]}`}>
+          <div className={`p-3 rounded-xl ${colorClasses[color as keyof typeof colorClasses]}`}>
             <Icon className="w-6 h-6" />
           </div>
           {trend && (
-            <span className="text-sm text-gray-500 font-medium">{trend}</span>
+            <span className="text-sm text-gray-500 font-medium bg-gray-50 px-2 py-1 rounded-lg">{trend}</span>
           )}
         </div>
         <div>
-          <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{formatCurrency(amount)}</p>
+          <p className="text-sm font-medium text-gray-600 mb-2">{title}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{formatCurrency(amount)}</p>
         </div>
       </div>
     );
@@ -54,15 +54,14 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-          <p className="text-gray-600">Welcome back! Here's your financial overview.</p>
-        </div>
+      {/* Header */}
+      <div className="text-center sm:text-left">
+        <h2 className="text-3xl sm:text-2xl font-bold text-gray-900 mb-2">Dashboard</h2>
+        <p className="text-gray-600 text-lg sm:text-base">Welcome back! Here's your financial overview.</p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Stats Grid - Mobile First */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard
           title="Current Balance"
           amount={yearData.balance}
@@ -91,54 +90,82 @@ const Dashboard: React.FC = () => {
         />
       </div>
 
-      {/* Quick Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Quick Overview - Stacked on Mobile */}
+      <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
         {/* Recent Transactions */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Transactions</h3>
-          <div className="space-y-3">
-            {monthData.transactions.slice(0, 5).map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between py-2">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-2 h-2 rounded-full ${
-                    transaction.type === 'income' ? 'bg-emerald-400' : 'bg-red-400'
-                  }`}></div>
-                  <div>
-                    <p className="font-medium text-gray-900">{transaction.description}</p>
-                    <p className="text-sm text-gray-500">{transaction.category}</p>
-                  </div>
-                </div>
-                <span className={`font-semibold ${
-                  transaction.type === 'income' ? 'text-emerald-600' : 'text-red-600'
-                }`}>
-                  {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
-                </span>
-              </div>
-            ))}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold text-gray-900">Recent Transactions</h3>
+            <ArrowRight className="w-5 h-5 text-gray-400" />
           </div>
+          
+          {monthData.transactions.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CreditCard className="w-8 h-8 text-gray-400" />
+              </div>
+              <p className="text-gray-500">No transactions yet</p>
+              <p className="text-sm text-gray-400 mt-1">Add your first transaction to get started</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {monthData.transactions.slice(0, 5).map((transaction) => (
+                <div key={transaction.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                  <div className="flex items-center space-x-4">
+                    <div className={`w-3 h-3 rounded-full ${
+                      transaction.type === 'income' ? 'bg-emerald-400' : 'bg-red-400'
+                    }`}></div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-gray-900 truncate">{transaction.description}</p>
+                      <p className="text-sm text-gray-500">{transaction.category}</p>
+                    </div>
+                  </div>
+                  <span className={`font-bold text-lg ${
+                    transaction.type === 'income' ? 'text-emerald-600' : 'text-red-600'
+                  }`}>
+                    {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Top Spending Categories */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Spending Categories</h3>
-          <div className="space-y-4">
-            {topCategories.map(([category, amount], index) => (
-              <div key={category} className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <span className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-sm font-medium text-gray-600">
-                    {index + 1}
-                  </span>
-                  <span className="font-medium text-gray-900">{category}</span>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold text-gray-900">{formatCurrency(amount)}</p>
-                  <p className="text-sm text-gray-500">
-                    {((amount / monthData.totalExpenses) * 100).toFixed(1)}%
-                  </p>
-                </div>
-              </div>
-            ))}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold text-gray-900">Top Categories</h3>
+            <ArrowRight className="w-5 h-5 text-gray-400" />
           </div>
+          
+          {topCategories.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <BarChart3 className="w-8 h-8 text-gray-400" />
+              </div>
+              <p className="text-gray-500">No spending data</p>
+              <p className="text-sm text-gray-400 mt-1">Start tracking expenses to see insights</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {topCategories.map(([category, amount], index) => (
+                <div key={category} className="flex items-center justify-between py-2">
+                  <div className="flex items-center space-x-4">
+                    <span className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-sm font-bold text-gray-600">
+                      {index + 1}
+                    </span>
+                    <span className="font-medium text-gray-900">{category}</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-gray-900">{formatCurrency(amount)}</p>
+                    <p className="text-sm text-gray-500">
+                      {((amount / monthData.totalExpenses) * 100).toFixed(1)}%
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

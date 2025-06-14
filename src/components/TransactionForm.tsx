@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, DollarSign } from 'lucide-react';
 import { useBudget } from '../hooks/useBudget';
 import { Transaction } from '../types';
 
@@ -49,55 +49,53 @@ const TransactionForm: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Add Transaction</h2>
-          <p className="text-gray-600">Record your income or expenses</p>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
+        <div className="mb-8 text-center sm:text-left">
+          <h2 className="text-3xl sm:text-2xl font-bold text-gray-900 mb-2">Add Transaction</h2>
+          <p className="text-gray-600 text-lg sm:text-base">Record your income or expenses</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Transaction Type */}
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Transaction Type - Mobile Optimized */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <label className="block text-base font-semibold text-gray-700 mb-4">
               Transaction Type
             </label>
-            <div className="flex space-x-3">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, type: 'expense', category: '' })}
-                className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg border-2 transition-all duration-200 ${
+                className={`flex items-center justify-center space-x-3 py-4 px-4 rounded-2xl border-2 transition-all duration-200 active:scale-95 ${
                   formData.type === 'expense'
-                    ? 'border-red-300 bg-red-50 text-red-700'
+                    ? 'border-red-300 bg-red-50 text-red-700 shadow-sm'
                     : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
                 }`}
               >
-                <Minus className="w-5 h-5" />
-                <span className="font-medium">Expense</span>
+                <Minus className="w-6 h-6" />
+                <span className="font-semibold text-lg">Expense</span>
               </button>
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, type: 'income', category: '' })}
-                className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg border-2 transition-all duration-200 ${
+                className={`flex items-center justify-center space-x-3 py-4 px-4 rounded-2xl border-2 transition-all duration-200 active:scale-95 ${
                   formData.type === 'income'
-                    ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
+                    ? 'border-emerald-300 bg-emerald-50 text-emerald-700 shadow-sm'
                     : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
                 }`}
               >
-                <Plus className="w-5 h-5" />
-                <span className="font-medium">Income</span>
+                <Plus className="w-6 h-6" />
+                <span className="font-semibold text-lg">Income</span>
               </button>
             </div>
           </div>
 
-          {/* Amount */}
+          {/* Amount - Large Touch Target */}
           <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="amount" className="block text-base font-semibold text-gray-700 mb-3">
               Amount
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">
-                $
-              </span>
+              <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-6 h-6" />
               <input
                 type="number"
                 id="amount"
@@ -105,23 +103,24 @@ const TransactionForm: React.FC = () => {
                 min="0"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg"
+                className="w-full pl-12 pr-4 py-4 border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-xl font-semibold"
                 placeholder="0.00"
+                inputMode="decimal"
                 required
               />
             </div>
           </div>
 
-          {/* Category */}
+          {/* Category - Large Select */}
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="category" className="block text-base font-semibold text-gray-700 mb-3">
               Category
             </label>
             <select
               id="category"
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="w-full px-4 py-4 border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg"
               required
             >
               <option value="">Select a category</option>
@@ -135,7 +134,7 @@ const TransactionForm: React.FC = () => {
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="description" className="block text-base font-semibold text-gray-700 mb-3">
               Description
             </label>
             <input
@@ -143,7 +142,7 @@ const TransactionForm: React.FC = () => {
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="w-full px-4 py-4 border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg"
               placeholder="Enter description..."
               required
             />
@@ -151,7 +150,7 @@ const TransactionForm: React.FC = () => {
 
           {/* Date */}
           <div>
-            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="date" className="block text-base font-semibold text-gray-700 mb-3">
               Date
             </label>
             <input
@@ -159,19 +158,19 @@ const TransactionForm: React.FC = () => {
               id="date"
               value={formData.date}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="w-full px-4 py-4 border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg"
               required
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Submit Button - Large Touch Target */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+            className={`w-full py-5 px-6 rounded-2xl font-bold text-xl transition-all duration-200 active:scale-95 ${
               formData.type === 'income'
-                ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                : 'bg-red-600 hover:bg-red-700 text-white'
+                ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg'
+                : 'bg-red-600 hover:bg-red-700 text-white shadow-lg'
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {isSubmitting ? 'Adding...' : `Add ${formData.type === 'income' ? 'Income' : 'Expense'}`}
