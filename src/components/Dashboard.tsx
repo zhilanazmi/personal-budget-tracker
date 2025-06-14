@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowRight, BarChart3 } from 'lucide-react';
 import { formatCurrency, getDateRange } from '../utils/dateUtils';
 import { useBudget } from '../hooks/useBudget';
 
