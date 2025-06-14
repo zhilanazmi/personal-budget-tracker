@@ -7,7 +7,9 @@ import {
   Settings,
   Wallet,
   X,
-  LogOut
+  LogOut,
+  ArrowRightLeft,
+  CreditCard
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -22,8 +24,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, onClose }) =>
   
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-indigo-600' },
+    { id: 'accounts', label: 'Kelola Akun', icon: CreditCard, color: 'from-indigo-500 to-purple-600' },
     { id: 'add', label: 'Tambah Transaksi', icon: Plus, color: 'from-emerald-500 to-green-600' },
-    { id: 'transactions', label: 'Riwayat Transaksi', icon: Receipt, color: 'from-purple-500 to-pink-600' },
+    { id: 'transfer', label: 'Transfer Dana', icon: ArrowRightLeft, color: 'from-purple-500 to-pink-600' },
+    { id: 'transactions', label: 'Riwayat Transaksi', icon: Receipt, color: 'from-pink-500 to-rose-600' },
     { id: 'reports', label: 'Laporan', icon: BarChart3, color: 'from-orange-500 to-red-600' },
     { id: 'settings', label: 'Pengaturan', icon: Settings, color: 'from-slate-500 to-gray-600' },
   ];
@@ -75,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, onClose }) =>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-6 space-y-3">
+      <nav className="flex-1 p-6 space-y-3 overflow-y-auto">
         {navItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;

@@ -5,7 +5,9 @@ import { ToastProvider } from './contexts/ToastContext';
 import { AuthProvider } from './contexts/AuthContext';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
+import AccountManager from './components/AccountManager';
 import TransactionForm from './components/TransactionForm';
+import TransferForm from './components/TransferForm';
 import TransactionList from './components/TransactionList';
 import Reports from './components/Reports';
 import Settings from './components/Settings';
@@ -51,7 +53,9 @@ function AppContent() {
   const renderContent = () => {
     const contentMap = {
       dashboard: <Dashboard />,
+      accounts: <AccountManager />,
       add: <TransactionForm />,
+      transfer: <TransferForm />,
       transactions: <TransactionList />,
       reports: <Reports />,
       settings: <Settings />,

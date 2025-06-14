@@ -1,11 +1,13 @@
 export interface Transaction {
   id: string;
   amount: number;
-  type: 'income' | 'expense';
+  type: 'income' | 'expense' | 'transfer';
   category: string;
   description: string;
   date: string;
   createdAt: string;
+  accountId?: string;
+  transferToAccountId?: string;
 }
 
 export interface Category {
@@ -14,6 +16,17 @@ export interface Category {
   icon: string;
   color: string;
   isCustom: boolean;
+}
+
+export interface Account {
+  id: string;
+  name: string;
+  type: 'bank' | 'cash' | 'digital_wallet' | 'credit_card' | 'savings' | 'investment' | 'other';
+  balance: number;
+  color: string;
+  icon: string;
+  isActive: boolean;
+  createdAt: string;
 }
 
 export interface DateRange {
@@ -27,4 +40,5 @@ export interface ReportData {
   balance: number;
   transactions: Transaction[];
   categoryBreakdown: { [key: string]: number };
+  accountBalances: { [key: string]: number };
 }

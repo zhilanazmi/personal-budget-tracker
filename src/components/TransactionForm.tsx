@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Plus, Minus, DollarSign, Calendar, Tag, FileText } from 'lucide-react';
+import { Plus, Minus, DollarSign, Calendar, Tag, FileText, Wallet } from 'lucide-react';
 import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
 import { Transaction } from '../types';
+import { formatCurrency } from '../utils/dateUtils';
 
 const TransactionForm: React.FC = () => {
-  const { addTransaction, categories, incomeCategories } = useBudget();
+  const { addTransaction, categories, incomeCategories, accounts } = useBudget();
   const { showToast } = useToast();
   const [formData, setFormData] = useState({
     type: 'expense' as 'income' | 'expense',
@@ -13,13 +14,14 @@ const TransactionForm: React.FC = () => {
     category: '',
     description: '',
     date: new Date().toISOString().split('T')[0],
+    accountId: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.amount || !formData.category || !formData.description) {
+    if (!formData.amount || !formData.category || !formData.description || !formData.accountId) {
       showToast('Mohon lengkapi semua field yang diperlukan', 'error');
       return;
     }
@@ -28,6 +30,15 @@ const TransactionForm: React.FC = () => {
     if (amount <= 0) {
       showToast('Jumlah harus lebih besar dari nol', 'error');
       return;
+    }
+
+    // Check if account has sufficient balance for expenses
+    if (formData.type === 'expense') {
+      const selectedAccount = accounts.find(acc => acc.id === formData.accountId);
+      if (selectedAccount && selectedAccount.balance < amount) {
+        showToast('Saldo akun tidak mencukupi untuk pengeluaran ini', 'error');
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -39,6 +50,7 @@ const TransactionForm: React.FC = () => {
         category: formData.category,
         description: formData.description,
         date: formData.date,
+        accountId: formData.accountId,
       };
 
       await addTransaction(transaction);
@@ -50,6 +62,7 @@ const TransactionForm: React.FC = () => {
         category: '',
         description: '',
         date: new Date().toISOString().split('T')[0],
+        accountId: '',
       });
       
       showToast(
@@ -64,6 +77,7 @@ const TransactionForm: React.FC = () => {
   };
 
   const availableCategories = formData.type === 'income' ? incomeCategories : categories;
+  const selectedAccount = accounts.find(acc => acc.id === formData.accountId);
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -89,7 +103,7 @@ const TransactionForm: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, type: 'expense', category: '' })}
+                onClick={() => setFormData({ ...formData, type: 'expense', category: '', accountId: '' })}
                 className={`flex items-center justify-center space-x-4 py-6 px-6 rounded-3xl border-2 transition-all duration-300 button-press focus-ring ${
                   formData.type === 'expense'
                     ? 'border-red-300 bg-gradient-to-br from-red-50 to-red-100 text-red-700 shadow-lg shadow-red-500/20'
@@ -107,7 +121,7 @@ const TransactionForm: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, type: 'income', category: '' })}
+                onClick={() => setFormData({ ...formData, type: 'income', category: '', accountId: '' })}
                 className={`flex items-center justify-center space-x-4 py-6 px-6 rounded-3xl border-2 transition-all duration-300 button-press focus-ring ${
                   formData.type === 'income'
                     ? 'border-emerald-300 bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-700 shadow-lg shadow-emerald-500/20'
@@ -126,8 +140,39 @@ const TransactionForm: React.FC = () => {
             </div>
           </div>
 
-          {/* Amount */}
+          {/* Account Selection */}
           <div className="fade-in" style={{ animationDelay: '200ms' }}>
+            <label htmlFor="account" className="block text-lg font-bold text-slate-700 mb-4">
+              Pilih Akun
+            </label>
+            <div className="relative">
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl">
+                <Wallet className="text-slate-600 w-6 h-6" />
+              </div>
+              <select
+                id="account"
+                value={formData.accountId}
+                onChange={(e) => setFormData({ ...formData, accountId: e.target.value })}
+                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
+                required
+              >
+                <option value="">Pilih akun</option>
+                {accounts.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.name} - {formatCurrency(account.balance)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {selectedAccount && (
+              <p className="mt-3 text-slate-600 font-medium">
+                Saldo tersedia: <span className="font-bold text-emerald-600">{formatCurrency(selectedAccount.balance)}</span>
+              </p>
+            )}
+          </div>
+
+          {/* Amount */}
+          <div className="fade-in" style={{ animationDelay: '300ms' }}>
             <label htmlFor="amount" className="block text-lg font-bold text-slate-700 mb-4">
               Jumlah
             </label>
@@ -151,7 +196,7 @@ const TransactionForm: React.FC = () => {
           </div>
 
           {/* Category */}
-          <div className="fade-in" style={{ animationDelay: '300ms' }}>
+          <div className="fade-in" style={{ animationDelay: '400ms' }}>
             <label htmlFor="category" className="block text-lg font-bold text-slate-700 mb-4">
               Kategori
             </label>
@@ -177,7 +222,7 @@ const TransactionForm: React.FC = () => {
           </div>
 
           {/* Description */}
-          <div className="fade-in" style={{ animationDelay: '400ms' }}>
+          <div className="fade-in" style={{ animationDelay: '500ms' }}>
             <label htmlFor="description" className="block text-lg font-bold text-slate-700 mb-4">
               Deskripsi
             </label>
@@ -198,7 +243,7 @@ const TransactionForm: React.FC = () => {
           </div>
 
           {/* Date */}
-          <div className="fade-in" style={{ animationDelay: '500ms' }}>
+          <div className="fade-in" style={{ animationDelay: '600ms' }}>
             <label htmlFor="date" className="block text-lg font-bold text-slate-700 mb-4">
               Tanggal
             </label>
@@ -218,7 +263,7 @@ const TransactionForm: React.FC = () => {
           </div>
 
           {/* Submit Button */}
-          <div className="fade-in" style={{ animationDelay: '600ms' }}>
+          <div className="fade-in" style={{ animationDelay: '700ms' }}>
             <button
               type="submit"
               disabled={isSubmitting}

@@ -1,10 +1,10 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowRight, BarChart3, Sparkles } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowRight, BarChart3, Sparkles, Wallet } from 'lucide-react';
 import { formatCurrency, getDateRange } from '../utils/dateUtils';
 import { useBudget } from '../hooks/useBudget';
 
 const Dashboard: React.FC = () => {
-  const { getReportData, loading } = useBudget();
+  const { getReportData, accounts, loading } = useBudget();
   
   if (loading) {
     return (
@@ -24,6 +24,8 @@ const Dashboard: React.FC = () => {
   const todayData = getReportData(getDateRange('today'));
   const monthData = getReportData(getDateRange('month'));
   const yearData = getReportData(getDateRange('year'));
+
+  const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
 
   const StatCard = ({ 
     title, 
@@ -105,10 +107,10 @@ const Dashboard: React.FC = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Saldo Saat Ini"
-          amount={yearData.balance}
-          icon={DollarSign}
-          color={yearData.balance >= 0 ? 'green' : 'red'}
+          title="Total Saldo"
+          amount={totalBalance}
+          icon={Wallet}
+          color={totalBalance >= 0 ? 'green' : 'red'}
           delay={0}
         />
         <StatCard
@@ -136,10 +138,65 @@ const Dashboard: React.FC = () => {
         />
       </div>
 
+      {/* Accounts Overview */}
+      <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '400ms' }}>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg">
+              <Wallet className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-slate-800">Saldo Akun</h3>
+          </div>
+          <button className="p-2 hover:bg-white/50 rounded-xl transition-colors duration-200 focus-ring">
+            <ArrowRight className="w-5 h-5 text-slate-500" />
+          </button>
+        </div>
+        
+        {accounts.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+              <Wallet className="w-10 h-10 text-slate-400" />
+            </div>
+            <h4 className="text-xl font-semibold text-slate-700 mb-2">Belum ada akun</h4>
+            <p className="text-slate-500 text-lg">Tambahkan akun pertama Anda</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {accounts.slice(0, 6).map((account, index) => (
+              <div 
+                key={account.id} 
+                className="flex items-center justify-between p-4 hover:bg-white/40 rounded-2xl transition-all duration-200 border border-transparent hover:border-white/40"
+                style={{ animationDelay: `${500 + index * 50}ms` }}
+              >
+                <div className="flex items-center space-x-3">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
+                    style={{ backgroundColor: account.color }}
+                  >
+                    <Wallet className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-slate-800 truncate">{account.name}</p>
+                    <p className="text-sm text-slate-500 capitalize">{account.type.replace('_', ' ')}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className={`font-bold text-lg ${
+                    account.balance >= 0 ? 'text-emerald-600' : 'text-red-600'
+                  }`}>
+                    {formatCurrency(account.balance)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Quick Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recent Transactions */}
-        <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '400ms' }}>
+        <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '500ms' }}>
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
@@ -166,16 +223,18 @@ const Dashboard: React.FC = () => {
                 <div 
                   key={transaction.id} 
                   className="flex items-center justify-between p-4 hover:bg-white/40 rounded-2xl transition-all duration-200 border border-transparent hover:border-white/40"
-                  style={{ animationDelay: `${500 + index * 50}ms` }}
+                  style={{ animationDelay: `${600 + index * 50}ms` }}
                 >
                   <div className="flex items-center space-x-4">
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm ${
                       transaction.type === 'income' 
                         ? 'bg-gradient-to-br from-emerald-400 to-emerald-500' 
+                        : transaction.type === 'transfer'
+                        ? 'bg-gradient-to-br from-purple-400 to-purple-500'
                         : 'bg-gradient-to-br from-red-400 to-red-500'
                     }`}>
                       <span className="text-white font-bold text-lg">
-                        {transaction.type === 'income' ? '+' : '-'}
+                        {transaction.type === 'income' ? '+' : transaction.type === 'transfer' ? '⇄' : '-'}
                       </span>
                     </div>
                     <div className="min-w-0 flex-1">
@@ -185,9 +244,10 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <span className={`font-bold text-xl ${
-                      transaction.type === 'income' ? 'text-emerald-600' : 'text-red-600'
+                      transaction.type === 'income' ? 'text-emerald-600' : 
+                      transaction.type === 'transfer' ? 'text-purple-600' : 'text-red-600'
                     }`}>
-                      {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                      {transaction.type === 'income' ? '+' : transaction.type === 'transfer' ? '' : '-'}{formatCurrency(transaction.amount)}
                     </span>
                   </div>
                 </div>
@@ -197,7 +257,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Top Spending Categories */}
-        <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '500ms' }}>
+        <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '600ms' }}>
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg">
@@ -224,7 +284,7 @@ const Dashboard: React.FC = () => {
                 <div 
                   key={category} 
                   className="flex items-center justify-between p-4 hover:bg-white/40 rounded-2xl transition-all duration-200"
-                  style={{ animationDelay: `${600 + index * 50}ms` }}
+                  style={{ animationDelay: `${700 + index * 50}ms` }}
                 >
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-sm">
