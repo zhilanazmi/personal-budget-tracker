@@ -84,7 +84,7 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
@@ -94,52 +94,64 @@ function AppContent() {
         />
       )}
 
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-out lg:relative lg:translate-x-0 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
-        <Sidebar 
-          activeTab={activeTab} 
-          onTabChange={handleTabChange} 
-          onClose={() => setSidebarOpen(false)} 
-        />
-      </div>
+      {/* Main Content Container */}
+      <div className="flex flex-1">
+        {/* Sidebar */}
+        <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-out lg:relative lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
+          <Sidebar 
+            activeTab={activeTab} 
+            onTabChange={handleTabChange} 
+            onClose={() => setSidebarOpen(false)} 
+          />
+        </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile Header */}
-        <header className="lg:hidden glass-effect shadow-sm border-b border-white/20 px-4 py-4 sticky top-0 z-30">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="p-3 rounded-2xl text-slate-600 hover:text-slate-800 hover:bg-white/50 focus-ring transition-all duration-200 button-press"
-              aria-label="Open navigation menu"
-              aria-expanded={sidebarOpen}
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-              BudgetTracker
-            </h1>
-            <button
-              onClick={signOut}
-              className="p-3 rounded-2xl text-slate-600 hover:text-red-600 hover:bg-red-50 focus-ring transition-all duration-200 button-press"
-              aria-label="Sign out"
-            >
-              <LogOut className="w-6 h-6" />
-            </button>
-          </div>
-        </header>
-
-        {/* Content Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-          <div className="max-w-7xl mx-auto">
-            <div className="slide-in">
-              {renderContent()}
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Mobile Header */}
+          <header className="lg:hidden glass-effect shadow-sm border-b border-white/20 px-4 py-4 sticky top-0 z-30">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="p-3 rounded-2xl text-slate-600 hover:text-slate-800 hover:bg-white/50 focus-ring transition-all duration-200 button-press"
+                aria-label="Open navigation menu"
+                aria-expanded={sidebarOpen}
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                BudgetTracker
+              </h1>
+              <button
+                onClick={signOut}
+                className="p-3 rounded-2xl text-slate-600 hover:text-red-600 hover:bg-red-50 focus-ring transition-all duration-200 button-press"
+                aria-label="Sign out"
+              >
+                <LogOut className="w-6 h-6" />
+              </button>
             </div>
-          </div>
-        </main>
+          </header>
+
+          {/* Content Area */}
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+            <div className="max-w-7xl mx-auto">
+              <div className="slide-in">
+                {renderContent()}
+              </div>
+            </div>
+          </main>
+        </div>
       </div>
+
+      {/* Global Footer */}
+      <footer className="glass-effect border-t border-white/20 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 mt-auto">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-sm sm:text-base text-slate-600 font-medium">
+            Copyright 2025 Zhillan Azmi. All Rights Reserved.
+          </p>
+        </div>
+      </footer>
 
       {/* Toast Container */}
       <Toast />
