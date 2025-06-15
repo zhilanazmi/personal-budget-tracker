@@ -9,7 +9,8 @@ import {
   X,
   LogOut,
   ArrowRightLeft,
-  CreditCard
+  CreditCard,
+  Brain
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -29,6 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, onClose }) =>
     { id: 'transfer', label: 'Transfer Dana', icon: ArrowRightLeft, color: 'from-purple-500 to-pink-600' },
     { id: 'transactions', label: 'Riwayat Transaksi', icon: Receipt, color: 'from-pink-500 to-rose-600' },
     { id: 'reports', label: 'Laporan', icon: BarChart3, color: 'from-orange-500 to-red-600' },
+    { id: 'analytics', label: 'Analitik Cerdas', icon: Brain, color: 'from-indigo-500 to-purple-600' },
     { id: 'settings', label: 'Pengaturan', icon: Settings, color: 'from-slate-500 to-gray-600' },
   ];
 

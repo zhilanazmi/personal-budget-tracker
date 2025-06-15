@@ -10,6 +10,7 @@ import TransactionForm from './components/TransactionForm';
 import TransferForm from './components/TransferForm';
 import TransactionList from './components/TransactionList';
 import Reports from './components/Reports';
+import Analytics from './components/Analytics';
 import Settings from './components/Settings';
 import Toast from './components/Toast';
 import Auth from './components/Auth';
@@ -58,6 +59,7 @@ function AppContent() {
       transfer: <TransferForm />,
       transactions: <TransactionList />,
       reports: <Reports />,
+      analytics: <Analytics />,
       settings: <Settings />,
     };
     
