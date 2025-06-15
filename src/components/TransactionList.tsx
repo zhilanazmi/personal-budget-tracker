@@ -284,15 +284,6 @@ const TransactionList: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Footer */}
-      <footer className="text-center py-6 sm:py-8 fade-in" style={{ animationDelay: '400ms' }}>
-        <div className="glass-effect rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-white/20">
-          <p className="text-sm sm:text-base text-slate-600 font-medium">
-            Copyright 2025 Zhillan Azmi. All Rights Reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 };
