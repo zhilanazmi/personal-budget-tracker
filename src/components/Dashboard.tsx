@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowRight, BarChart3, Sparkles, Wallet } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowRight, BarChart3, Sparkles, Wallet, Plus, Minus, ArrowRightLeft } from 'lucide-react';
 import { formatCurrency, getDateRange } from '../utils/dateUtils';
 import { useBudget } from '../hooks/useBudget';
 
@@ -88,6 +88,58 @@ const Dashboard: React.FC = () => {
   const topCategories = Object.entries(monthData.categoryBreakdown)
     .sort(([,a], [,b]) => b - a)
     .slice(0, 5);
+
+  const getTransactionIcon = (type: string) => {
+    switch (type) {
+      case 'income':
+        return <Plus className="w-5 h-5" />;
+      case 'expense':
+        return <Minus className="w-5 h-5" />;
+      case 'transfer':
+        return <ArrowRightLeft className="w-5 h-5" />;
+      default:
+        return <Minus className="w-5 h-5" />;
+    }
+  };
+
+  const getTransactionColor = (type: string) => {
+    switch (type) {
+      case 'income':
+        return 'bg-gradient-to-br from-emerald-400 to-emerald-500';
+      case 'expense':
+        return 'bg-gradient-to-br from-red-400 to-red-500';
+      case 'transfer':
+        return 'bg-gradient-to-br from-purple-400 to-purple-500';
+      default:
+        return 'bg-gradient-to-br from-slate-400 to-slate-500';
+    }
+  };
+
+  const getAmountColor = (type: string) => {
+    switch (type) {
+      case 'income':
+        return 'text-emerald-600';
+      case 'expense':
+        return 'text-red-600';
+      case 'transfer':
+        return 'text-purple-600';
+      default:
+        return 'text-slate-600';
+    }
+  };
+
+  const getAmountPrefix = (type: string) => {
+    switch (type) {
+      case 'income':
+        return '+';
+      case 'expense':
+        return '-';
+      case 'transfer':
+        return '';
+      default:
+        return '';
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -226,16 +278,8 @@ const Dashboard: React.FC = () => {
                   style={{ animationDelay: `${600 + index * 50}ms` }}
                 >
                   <div className="flex items-center space-x-4">
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm ${
-                      transaction.type === 'income' 
-                        ? 'bg-gradient-to-br from-emerald-400 to-emerald-500' 
-                        : transaction.type === 'transfer'
-                        ? 'bg-gradient-to-br from-purple-400 to-purple-500'
-                        : 'bg-gradient-to-br from-red-400 to-red-500'
-                    }`}>
-                      <span className="text-white font-bold text-lg">
-                        {transaction.type === 'income' ? '+' : transaction.type === 'transfer' ? '⇄' : '-'}
-                      </span>
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm text-white ${getTransactionColor(transaction.type)}`}>
+                      {getTransactionIcon(transaction.type)}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-slate-800 truncate text-lg">{transaction.description}</p>
@@ -243,11 +287,8 @@ const Dashboard: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className={`font-bold text-xl ${
-                      transaction.type === 'income' ? 'text-emerald-600' : 
-                      transaction.type === 'transfer' ? 'text-purple-600' : 'text-red-600'
-                    }`}>
-                      {transaction.type === 'income' ? '+' : transaction.type === 'transfer' ? '' : '-'}{formatCurrency(transaction.amount)}
+                    <span className={`font-bold text-xl ${getAmountColor(transaction.type)}`}>
+                      {getAmountPrefix(transaction.type)}{formatCurrency(transaction.amount)}
                     </span>
                   </div>
                 </div>
