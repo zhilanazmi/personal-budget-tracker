@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Plus, Minus, DollarSign, Calendar, Tag, FileText, Wallet } from 'lucide-react';
+import { Plus, Minus, Calendar, Tag, FileText, Wallet } from 'lucide-react';
 import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
 import { Transaction } from '../types';
-import { formatCurrency } from '../utils/dateUtils';
+import { formatCurrency, formatNumberWithDots, parseFormattedNumber } from '../utils/dateUtils';
 
 const TransactionForm: React.FC = () => {
   const { addTransaction, categories, incomeCategories, accounts } = useBudget();
@@ -16,6 +16,7 @@ const TransactionForm: React.FC = () => {
     date: new Date().toISOString().split('T')[0],
     accountId: '',
   });
+  const [displayAmount, setDisplayAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,8 +27,8 @@ const TransactionForm: React.FC = () => {
       return;
     }
 
-    const amount = parseFloat(formData.amount);
-    if (amount <= 0) {
+    const amount = parseFloat(parseFormattedNumber(formData.amount));
+    if (amount <= 0 || isNaN(amount)) {
       showToast('Jumlah harus lebih besar dari nol', 'error');
       return;
     }
@@ -64,12 +65,13 @@ const TransactionForm: React.FC = () => {
         date: new Date().toISOString().split('T')[0],
         accountId: '',
       });
+      setDisplayAmount('');
       
       showToast(
         `${formData.type === 'income' ? 'Pemasukan' : 'Pengeluaran'} berhasil ditambahkan!`, 
         'success'
       );
-    } catch (error) {
+    } catch {
       showToast('Gagal menambahkan transaksi. Silakan coba lagi.', 'error');
     } finally {
       setIsSubmitting(false);
@@ -181,14 +183,16 @@ const TransactionForm: React.FC = () => {
                 <span className="text-slate-600 font-bold text-lg">Rp</span>
               </div>
               <input
-                type="number"
+                type="text"
                 id="amount"
-                step="1000"
-                min="0"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                value={displayAmount}
+                onChange={(e) => {
+                  const formatted = formatNumberWithDots(e.target.value);
+                  setDisplayAmount(formatted);
+                  setFormData({ ...formData, amount: formatted });
+                }}
                 className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-2xl font-bold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
-                placeholder="0"
+                placeholder="Contoh: 50.000"
                 inputMode="numeric"
                 required
               />

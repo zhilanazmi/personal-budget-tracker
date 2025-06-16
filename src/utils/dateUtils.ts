@@ -51,3 +51,20 @@ export const isDateInRange = (date: string, from: string, to: string): boolean =
   
   return checkDate >= fromDate && checkDate <= toDate;
 };
+
+// Format number with dots as thousand separators (e.g., 1000000 -> "1.000.000")
+export const formatNumberWithDots = (value: string): string => {
+  // Remove all non-digit characters
+  const numericValue = value.replace(/\D/g, '');
+  
+  // If empty, return empty string
+  if (!numericValue) return '';
+  
+  // Add dots as thousand separators
+  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
+
+// Parse formatted number back to plain number string (e.g., "1.000.000" -> "1000000")
+export const parseFormattedNumber = (value: string): string => {
+  return value.replace(/\./g, '');
+};
