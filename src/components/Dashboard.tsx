@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowRight, BarChart3, Sparkles, Wallet } from 'lucide-react';
+import { TrendingUp, TrendingDown, CreditCard, ArrowRight, BarChart3, Sparkles, Wallet } from 'lucide-react';
 import { formatCurrency, getDateRange } from '../utils/dateUtils';
 import { useBudget } from '../hooks/useBudget';
 
@@ -23,7 +23,6 @@ const Dashboard: React.FC = () => {
   
   const todayData = getReportData(getDateRange('today'));
   const monthData = getReportData(getDateRange('month'));
-  const yearData = getReportData(getDateRange('year'));
 
   const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
 
@@ -42,18 +41,20 @@ const Dashboard: React.FC = () => {
     color?: string;
     delay?: number;
   }) => {
-    const colorClasses = {
-      blue: 'from-blue-500 to-blue-600 shadow-blue-500/25',
-      green: 'from-emerald-500 to-emerald-600 shadow-emerald-500/25',
-      red: 'from-red-500 to-red-600 shadow-red-500/25',
-      purple: 'from-purple-500 to-purple-600 shadow-purple-500/25',
-    };
+
 
     const bgClasses = {
       blue: 'bg-blue-50 border-blue-100',
       green: 'bg-emerald-50 border-emerald-100',
       red: 'bg-red-50 border-red-100',
       purple: 'bg-purple-50 border-purple-100',
+    };
+
+    const textClasses = {
+      blue: 'text-blue-700',
+      green: 'text-emerald-700',
+      red: 'text-red-700',
+      purple: 'text-purple-700',
     };
 
     return (
@@ -77,7 +78,7 @@ const Dashboard: React.FC = () => {
         </div>
         <div>
           <p className="text-sm font-semibold text-slate-600 mb-3 uppercase tracking-wide">{title}</p>
-          <p className="text-3xl sm:text-4xl font-bold text-slate-800 tracking-tight">
+          <p className={`text-3xl sm:text-4xl font-bold tracking-tight ${textClasses[color as keyof typeof textClasses]}`}>
             {formatCurrency(amount)}
           </p>
         </div>
