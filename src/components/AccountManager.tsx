@@ -6,7 +6,7 @@ import { Account } from '../types';
 import { formatCurrency } from '../utils/dateUtils';
 
 const AccountManager: React.FC = () => {
-  const { accounts, addAccount, updateAccount, loading } = useBudget();
+  const { accounts, addAccount, updateAccount, deleteAccount, loading } = useBudget();
   const { showToast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
@@ -101,6 +101,20 @@ const AccountManager: React.FC = () => {
     });
     setEditingAccount(account);
     setShowAddForm(true);
+  };
+
+  const handleDelete = async (account: Account) => {
+    const confirmMessage = `Apakah Anda yakin ingin menghapus akun "${account.name}"?\n\nPerhatian: Akun tidak dapat dihapus jika:\n- Memiliki transaksi\n- Memiliki saldo yang tidak nol`;
+    
+    if (window.confirm(confirmMessage)) {
+      try {
+        await deleteAccount(account.id);
+        showToast(`Akun "${account.name}" berhasil dihapus!`, 'success');
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Gagal menghapus akun';
+        showToast(errorMessage, 'error');
+      }
+    }
   };
 
   const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
@@ -268,12 +282,22 @@ const AccountManager: React.FC = () => {
                 >
                   <IconComponent className="w-8 h-8 text-white" />
                 </div>
-                <button
-                  onClick={() => startEdit(account)}
-                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-white/50 rounded-xl transition-all duration-200 opacity-0 group-hover:opacity-100 button-press focus-ring"
-                >
-                  <Edit3 className="w-5 h-5" />
-                </button>
+                <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <button
+                    onClick={() => startEdit(account)}
+                    className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 button-press focus-ring"
+                    title="Edit akun"
+                  >
+                    <Edit3 className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(account)}
+                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 button-press focus-ring"
+                    title="Hapus akun"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
               
               <div>

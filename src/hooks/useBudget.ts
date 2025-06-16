@@ -210,6 +210,47 @@ export const useBudget = () => {
     }
   };
 
+  const deleteAccount = async (id: string) => {
+    if (!user) return;
+
+    try {
+      // Check if account has any transactions
+      const { data: transactionsData, error: transactionError } = await supabase
+        .from('transactions')
+        .select('id')
+        .or(`account_id.eq.${id},transfer_to_account_id.eq.${id}`)
+        .eq('user_id', user.id)
+        .limit(1);
+
+      if (transactionError) throw transactionError;
+
+      if (transactionsData && transactionsData.length > 0) {
+        throw new Error('Tidak dapat menghapus akun yang memiliki transaksi. Hapus semua transaksi terlebih dahulu.');
+      }
+
+      // Check if account has balance
+      const account = accounts.find(acc => acc.id === id);
+      if (account && account.balance !== 0) {
+        throw new Error('Tidak dapat menghapus akun dengan saldo yang tidak nol. Pindahkan atau hapus saldo terlebih dahulu.');
+      }
+
+      // Delete account
+      const { error } = await supabase
+        .from('accounts')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Remove from local state
+      setAccounts(prev => prev.filter(account => account.id !== id));
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      throw error;
+    }
+  };
+
   const addTransaction = async (transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
     if (!user) return;
 
@@ -425,6 +466,7 @@ export const useBudget = () => {
     addCategory,
     addAccount,
     updateAccount,
+    deleteAccount,
     getReportData,
   };
 };
