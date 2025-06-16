@@ -4,9 +4,14 @@ import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
 
 const Settings: React.FC = () => {
-  const { addCategory, categories, loading } = useBudget();
+  const { addCategory, categories, incomeCategories, loading } = useBudget();
   const { showToast } = useToast();
-  const [newCategory, setNewCategory] = useState({ name: '', icon: 'Tag', color: '#3B82F6' });
+  const [newCategory, setNewCategory] = useState({ 
+    name: '', 
+    icon: 'Tag', 
+    color: '#3B82F6',
+    type: 'expense' as 'expense' | 'income'
+  });
   const [showAddCategory, setShowAddCategory] = useState(false);
 
   if (loading) {
@@ -30,8 +35,13 @@ const Settings: React.FC = () => {
           icon: newCategory.icon,
           color: newCategory.color,
           isCustom: true,
+        }, newCategory.type === 'income');
+        setNewCategory({ 
+          name: '', 
+          icon: 'Tag', 
+          color: '#3B82F6',
+          type: 'expense'
         });
-        setNewCategory({ name: '', icon: 'Tag', color: '#3B82F6' });
         setShowAddCategory(false);
         showToast('Kategori berhasil ditambahkan!', 'success');
       } catch (error) {
@@ -86,9 +96,54 @@ const Settings: React.FC = () => {
                 value={newCategory.name}
                 onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
                 className="w-full px-6 py-5 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus"
-                placeholder="Masukkan nama kategori"
+                placeholder="🏷️ Masukkan nama kategori"
                 required
               />
+            </div>
+
+            <div>
+              <label className="block text-lg font-bold text-slate-700 mb-4">
+                Tipe Kategori
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <label className={`flex items-center justify-center p-6 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${
+                  newCategory.type === 'expense' 
+                    ? 'border-red-500 bg-red-50 text-red-700' 
+                    : 'border-slate-200 bg-white/60 text-slate-700 hover:border-slate-300'
+                }`}>
+                  <input
+                    type="radio"
+                    name="categoryType"
+                    value="expense"
+                    checked={newCategory.type === 'expense'}
+                    onChange={(e) => setNewCategory({ ...newCategory, type: e.target.value as 'expense' | 'income' })}
+                    className="sr-only"
+                  />
+                  <div className="text-center">
+                    <div className="text-2xl mb-2">💸</div>
+                    <div className="font-bold text-lg">Pengeluaran</div>
+                  </div>
+                </label>
+                
+                <label className={`flex items-center justify-center p-6 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${
+                  newCategory.type === 'income' 
+                    ? 'border-green-500 bg-green-50 text-green-700' 
+                    : 'border-slate-200 bg-white/60 text-slate-700 hover:border-slate-300'
+                }`}>
+                  <input
+                    type="radio"
+                    name="categoryType"
+                    value="income"
+                    checked={newCategory.type === 'income'}
+                    onChange={(e) => setNewCategory({ ...newCategory, type: e.target.value as 'expense' | 'income' })}
+                    className="sr-only"
+                  />
+                  <div className="text-center">
+                    <div className="text-2xl mb-2">💰</div>
+                    <div className="font-bold text-lg">Pemasukan</div>
+                  </div>
+                </label>
+              </div>
             </div>
 
             <div>
@@ -138,25 +193,60 @@ const Settings: React.FC = () => {
           <h3 className="text-2xl font-bold text-slate-800">Kategori Saat Ini</h3>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {categories.map((category, index) => (
-            <div
-              key={category.id}
-              className="flex items-center space-x-4 p-6 border-2 border-white/30 rounded-2xl bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 fade-in"
-              style={{ animationDelay: `${300 + index * 50}ms` }}
-            >
+        {/* Expense Categories */}
+        <div className="mb-8">
+          <h4 className="text-xl font-bold text-slate-700 mb-4 flex items-center">
+            <span className="text-2xl mr-2">💸</span>
+            Kategori Pengeluaran
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {categories.map((category, index) => (
               <div
-                className="w-8 h-8 rounded-full shadow-sm"
-                style={{ backgroundColor: category.color }}
-              />
-              <span className="text-lg font-bold text-slate-800 flex-1">{category.name}</span>
-              {category.isCustom && (
-                <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full font-semibold">
-                  Kustom
-                </span>
-              )}
-            </div>
-          ))}
+                key={category.id}
+                className="flex items-center space-x-4 p-6 border-2 border-white/30 rounded-2xl bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 fade-in"
+                style={{ animationDelay: `${300 + index * 50}ms` }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full shadow-sm"
+                  style={{ backgroundColor: category.color }}
+                />
+                <span className="text-lg font-bold text-slate-800 flex-1">{category.name}</span>
+                {category.isCustom && (
+                  <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full font-semibold">
+                    Kustom
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Income Categories */}
+        <div>
+          <h4 className="text-xl font-bold text-slate-700 mb-4 flex items-center">
+            <span className="text-2xl mr-2">💰</span>
+            Kategori Pemasukan
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {incomeCategories.map((category, index) => (
+              <div
+                key={category.id}
+                className="flex items-center space-x-4 p-6 border-2 border-white/30 rounded-2xl bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 fade-in"
+                style={{ animationDelay: `${400 + index * 50}ms` }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full shadow-sm"
+                  style={{ backgroundColor: category.color }}
+                />
+                <span className="text-lg font-bold text-slate-800 flex-1">{category.name}</span>
+                {category.isCustom && (
+                  <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full font-semibold">
+                    Kustom
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
