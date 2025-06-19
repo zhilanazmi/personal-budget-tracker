@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRightLeft, ArrowRight } from 'lucide-react';
+import { ArrowRightLeft, ArrowRight, Calendar, FileText, DollarSign, Wallet } from 'lucide-react';
 import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
 import { formatCurrency, formatNumberWithDots, parseFormattedNumber } from '../utils/dateUtils';
@@ -100,19 +100,40 @@ const TransferForm: React.FC = () => {
             <label className="block text-lg font-bold text-slate-700 mb-4">
               Dari Akun
             </label>
-            <select
-              value={formData.fromAccountId}
-              onChange={(e) => setFormData({ ...formData, fromAccountId: e.target.value })}
-              className="w-full px-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
-              required
-            >
-              <option value="">Pilih akun sumber</option>
-              {accounts.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.name} - {formatCurrency(account.balance)}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
+                <Wallet className="text-slate-600 w-6 h-6" />
+              </div>
+              <select
+                value={formData.fromAccountId}
+                onChange={(e) => setFormData({ ...formData, fromAccountId: e.target.value })}
+                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
+                required
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 1.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em'
+                }}
+              >
+                <option value="">Pilih akun sumber</option>
+                {accounts.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.name} - {formatCurrency(account.balance)}
+                  </option>
+                ))}
+              </select>
+              
+              {/* Color indicator for selected from account */}
+              {fromAccount && (
+                <div className="absolute right-12 top-1/2 transform -translate-y-1/2">
+                  <div 
+                    className="w-6 h-6 rounded-full border-2 border-white shadow-lg"
+                    style={{ backgroundColor: fromAccount.color }}
+                  />
+                </div>
+              )}
+            </div>
             {fromAccount && (
               <p className="mt-3 text-slate-600 font-medium">
                 Saldo tersedia: <span className="font-bold text-emerald-600">{formatCurrency(fromAccount.balance)}</span>
@@ -132,21 +153,42 @@ const TransferForm: React.FC = () => {
             <label className="block text-lg font-bold text-slate-700 mb-4">
               Ke Akun
             </label>
-            <select
-              value={formData.toAccountId}
-              onChange={(e) => setFormData({ ...formData, toAccountId: e.target.value })}
-              className="w-full px-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
-              required
-            >
-              <option value="">Pilih akun tujuan</option>
-              {accounts
-                .filter(account => account.id !== formData.fromAccountId)
-                .map((account) => (
-                  <option key={account.id} value={account.id}>
-                    {account.name} - {formatCurrency(account.balance)}
-                  </option>
-                ))}
-            </select>
+            <div className="relative">
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
+                <Wallet className="text-slate-600 w-6 h-6" />
+              </div>
+              <select
+                value={formData.toAccountId}
+                onChange={(e) => setFormData({ ...formData, toAccountId: e.target.value })}
+                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
+                required
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 1.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em'
+                }}
+              >
+                <option value="">Pilih akun tujuan</option>
+                {accounts
+                  .filter(account => account.id !== formData.fromAccountId)
+                  .map((account) => (
+                    <option key={account.id} value={account.id}>
+                      {account.name} - {formatCurrency(account.balance)}
+                    </option>
+                  ))}
+              </select>
+              
+              {/* Color indicator for selected to account */}
+              {toAccount && (
+                <div className="absolute right-12 top-1/2 transform -translate-y-1/2">
+                  <div 
+                    className="w-6 h-6 rounded-full border-2 border-white shadow-lg"
+                    style={{ backgroundColor: toAccount.color }}
+                  />
+                </div>
+              )}
+            </div>
             {toAccount && (
               <p className="mt-3 text-slate-600 font-medium">
                 Saldo saat ini: <span className="font-bold text-blue-600">{formatCurrency(toAccount.balance)}</span>
@@ -160,8 +202,8 @@ const TransferForm: React.FC = () => {
               Jumlah Transfer
             </label>
             <div className="relative">
-              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl">
-                <span className="text-slate-600 font-bold text-lg">Rp</span>
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
+                <DollarSign className="text-slate-600 w-6 h-6" />
               </div>
               <input
                 type="text"
@@ -176,6 +218,9 @@ const TransferForm: React.FC = () => {
                 inputMode="numeric"
                 required
               />
+              <div className="absolute right-6 top-1/2 transform -translate-y-1/2 text-slate-500 font-bold text-lg">
+                IDR
+              </div>
             </div>
           </div>
 
@@ -184,14 +229,19 @@ const TransferForm: React.FC = () => {
             <label className="block text-lg font-bold text-slate-700 mb-4">
               Keterangan
             </label>
-            <input
-              type="text"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
-              placeholder="Contoh: Tarik tunai, Top up e-wallet"
-              required
-            />
+            <div className="relative">
+              <div className="absolute left-6 top-6 p-2 bg-slate-100 rounded-xl z-10">
+                <FileText className="text-slate-600 w-6 h-6" />
+              </div>
+              <input
+                type="text"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
+                placeholder="Contoh: Tarik tunai, Top up e-wallet"
+                required
+              />
+            </div>
           </div>
 
           {/* Date */}
@@ -199,13 +249,18 @@ const TransferForm: React.FC = () => {
             <label className="block text-lg font-bold text-slate-700 mb-4">
               Tanggal
             </label>
-            <input
-              type="date"
-              value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              className="w-full px-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
-              required
-            />
+            <div className="relative">
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
+                <Calendar className="text-slate-600 w-6 h-6" />
+              </div>
+              <input
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
+                required
+              />
+            </div>
           </div>
 
           {/* Submit Button */}
