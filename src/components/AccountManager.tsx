@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { Plus, Wallet, Building2, Smartphone, CreditCard, PiggyBank, TrendingUp, MoreHorizontal, Edit3, Trash2 } from 'lucide-react';
+import { Plus, Wallet, Building2, Smartphone, CreditCard, PiggyBank, TrendingUp, MoreHorizontal, Edit3, Trash2, Eye, X, Calendar, ArrowUpRight, ArrowDownRight, ArrowRightLeft } from 'lucide-react';
 import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
-import { Account } from '../types';
-import { formatCurrency } from '../utils/dateUtils';
+import { Account, Transaction } from '../types';
+import { formatCurrency, formatDate } from '../utils/dateUtils';
 
 const AccountManager: React.FC = () => {
-  const { accounts, addAccount, updateAccount, deleteAccount, loading } = useBudget();
+  const { accounts, addAccount, updateAccount, deleteAccount, loading, transactions } = useBudget();
   const { showToast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+  const [selectedAccountDetails, setSelectedAccountDetails] = useState<Account | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     type: 'other' as Account['type'],
@@ -43,6 +44,14 @@ const AccountManager: React.FC = () => {
       TrendingUp, MoreHorizontal
     };
     return icons[iconName] || Wallet;
+  };
+
+  // Get transactions for a specific account
+  const getAccountTransactions = (accountId: string): Transaction[] => {
+    return transactions
+      .filter(t => t.accountId === accountId || t.transferToAccountId === accountId)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 10); // Show last 10 transactions
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,6 +123,48 @@ const AccountManager: React.FC = () => {
         const errorMessage = error instanceof Error ? error.message : 'Gagal menghapus akun';
         showToast(errorMessage, 'error');
       }
+    }
+  };
+
+  const getTransactionIcon = (transaction: Transaction, accountId: string) => {
+    if (transaction.type === 'transfer') {
+      if (transaction.accountId === accountId) {
+        return <ArrowUpRight className="w-4 h-4" />; // Outgoing transfer
+      } else {
+        return <ArrowDownRight className="w-4 h-4" />; // Incoming transfer
+      }
+    } else if (transaction.type === 'income') {
+      return <ArrowDownRight className="w-4 h-4" />;
+    } else {
+      return <ArrowUpRight className="w-4 h-4" />;
+    }
+  };
+
+  const getTransactionColor = (transaction: Transaction, accountId: string) => {
+    if (transaction.type === 'transfer') {
+      if (transaction.accountId === accountId) {
+        return 'text-orange-600'; // Outgoing transfer
+      } else {
+        return 'text-blue-600'; // Incoming transfer
+      }
+    } else if (transaction.type === 'income') {
+      return 'text-emerald-600';
+    } else {
+      return 'text-red-600';
+    }
+  };
+
+  const getTransactionAmount = (transaction: Transaction, accountId: string) => {
+    if (transaction.type === 'transfer') {
+      if (transaction.accountId === accountId) {
+        return -transaction.amount; // Outgoing transfer (negative)
+      } else {
+        return transaction.amount; // Incoming transfer (positive)
+      }
+    } else if (transaction.type === 'income') {
+      return transaction.amount;
+    } else {
+      return -transaction.amount;
     }
   };
 
@@ -269,47 +320,87 @@ const AccountManager: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {accounts.map((account, index) => {
           const IconComponent = getIconComponent(account.icon);
+          const accountTransactions = getAccountTransactions(account.id);
+          
           return (
             <div
               key={account.id}
-              className="glass-effect rounded-3xl p-6 border border-white/20 card-hover fade-in group"
+              className="glass-effect rounded-3xl p-6 border border-white/20 transition-all duration-300 group hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 hover:border-blue-200/50 fade-in relative overflow-hidden"
               style={{ animationDelay: `${300 + index * 100}ms` }}
             >
-              <div className="flex items-center justify-between mb-6">
-                <div 
-                  className="p-4 rounded-2xl shadow-lg"
-                  style={{ backgroundColor: account.color }}
-                >
-                  <IconComponent className="w-8 h-8 text-white" />
-                </div>
-                <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <button
-                    onClick={() => startEdit(account)}
-                    className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 button-press focus-ring"
-                    title="Edit akun"
-                  >
-                    <Edit3 className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(account)}
-                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 button-press focus-ring"
-                    title="Hapus akun"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
+              {/* Hover Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
               
-              <div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">{account.name}</h3>
-                <p className="text-sm text-slate-500 mb-4 capitalize font-medium">
-                  {accountTypes.find(t => t.value === account.type)?.label || account.type}
-                </p>
-                <p className={`text-3xl font-bold tracking-tight ${
-                  account.balance >= 0 ? 'text-emerald-600' : 'text-red-600'
-                }`}>
-                  {formatCurrency(account.balance)}
-                </p>
+              {/* Card Content */}
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-6">
+                  <div 
+                    className="p-4 rounded-2xl shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl"
+                    style={{ backgroundColor: account.color }}
+                  >
+                    <IconComponent className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
+                    <button
+                      onClick={() => setSelectedAccountDetails(account)}
+                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 button-press focus-ring"
+                      title="Lihat detail transaksi"
+                    >
+                      <Eye className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => startEdit(account)}
+                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 button-press focus-ring"
+                      title="Edit akun"
+                    >
+                      <Edit3 className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(account)}
+                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 button-press focus-ring"
+                      title="Hapus akun"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-800 transition-colors duration-300">{account.name}</h3>
+                  <p className="text-sm text-slate-500 mb-4 capitalize font-medium">
+                    {accountTypes.find(t => t.value === account.type)?.label || account.type}
+                  </p>
+                  <p className={`text-3xl font-bold tracking-tight transition-all duration-300 group-hover:scale-105 ${
+                    account.balance >= 0 ? 'text-emerald-600' : 'text-red-600'
+                  }`}>
+                    {formatCurrency(account.balance)}
+                  </p>
+                  
+                  {/* Quick Transaction Preview */}
+                  <div className="mt-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                    <div className="text-xs text-slate-500 mb-2 font-semibold">Transaksi Terbaru:</div>
+                    {accountTransactions.length > 0 ? (
+                      <div className="space-y-1">
+                        {accountTransactions.slice(0, 2).map((transaction) => (
+                          <div key={transaction.id} className="flex items-center justify-between text-xs">
+                            <span className="text-slate-600 truncate flex-1 mr-2">{transaction.description}</span>
+                            <span className={`font-bold ${getTransactionColor(transaction, account.id)}`}>
+                              {getTransactionAmount(transaction, account.id) > 0 ? '+' : ''}
+                              {formatCurrency(Math.abs(getTransactionAmount(transaction, account.id)))}
+                            </span>
+                          </div>
+                        ))}
+                        {accountTransactions.length > 2 && (
+                          <div className="text-xs text-slate-400 text-center pt-1">
+                            +{accountTransactions.length - 2} transaksi lainnya
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-slate-400 italic">Belum ada transaksi</div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           );
@@ -325,6 +416,118 @@ const AccountManager: React.FC = () => {
           <p className="text-slate-500 text-lg max-w-md mx-auto">
             Tambahkan akun pertama Anda untuk mulai mengelola keuangan dengan lebih terorganisir
           </p>
+        </div>
+      )}
+
+      {/* Account Details Modal */}
+      {selectedAccountDetails && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-blue-50">
+              <div className="flex items-center space-x-4">
+                <div 
+                  className="p-3 rounded-2xl shadow-lg"
+                  style={{ backgroundColor: selectedAccountDetails.color }}
+                >
+                  {React.createElement(getIconComponent(selectedAccountDetails.icon), { className: "w-6 h-6 text-white" })}
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-800">{selectedAccountDetails.name}</h3>
+                  <p className="text-slate-600 capitalize">
+                    {accountTypes.find(t => t.value === selectedAccountDetails.type)?.label || selectedAccountDetails.type}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedAccountDetails(null)}
+                className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors duration-200 focus-ring"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Account Balance */}
+            <div className="p-6 border-b border-slate-200 text-center bg-gradient-to-r from-slate-50/50 to-blue-50/50">
+              <p className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wide">Saldo Saat Ini</p>
+              <p className={`text-4xl font-bold tracking-tight ${
+                selectedAccountDetails.balance >= 0 ? 'text-emerald-600' : 'text-red-600'
+              }`}>
+                {formatCurrency(selectedAccountDetails.balance)}
+              </p>
+            </div>
+
+            {/* Transactions List */}
+            <div className="p-6">
+              <h4 className="text-lg font-bold text-slate-800 mb-4 flex items-center">
+                <Calendar className="w-5 h-5 mr-2" />
+                Riwayat Transaksi (10 Terbaru)
+              </h4>
+              
+              <div className="max-h-96 overflow-y-auto space-y-3">
+                {getAccountTransactions(selectedAccountDetails.id).length === 0 ? (
+                  <div className="text-center py-12">
+                    <Calendar className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                    <h5 className="text-xl font-semibold text-slate-600 mb-2">Belum ada transaksi</h5>
+                    <p className="text-slate-500">Transaksi akan muncul di sini setelah Anda menambahkannya</p>
+                  </div>
+                ) : (
+                  getAccountTransactions(selectedAccountDetails.id).map((transaction, index) => {
+                    const amount = getTransactionAmount(transaction, selectedAccountDetails.id);
+                    const isIncoming = amount > 0;
+                    
+                    return (
+                      <div 
+                        key={transaction.id} 
+                        className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors duration-200"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <div className="flex items-center space-x-4 flex-1 min-w-0">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                            transaction.type === 'transfer' 
+                              ? (transaction.accountId === selectedAccountDetails.id ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600')
+                              : isIncoming 
+                              ? 'bg-emerald-100 text-emerald-600' 
+                              : 'bg-red-100 text-red-600'
+                          }`}>
+                            {getTransactionIcon(transaction, selectedAccountDetails.id)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h6 className="font-semibold text-slate-800 truncate">{transaction.description}</h6>
+                            <div className="flex items-center space-x-2 text-sm text-slate-500">
+                              <span>{transaction.category}</span>
+                              <span>•</span>
+                              <span>{formatDate(transaction.date)}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right ml-4">
+                          <span className={`text-lg font-bold ${getTransactionColor(transaction, selectedAccountDetails.id)}`}>
+                            {isIncoming ? '+' : ''}{formatCurrency(Math.abs(amount))}
+                          </span>
+                          {transaction.type === 'transfer' && (
+                            <p className="text-xs text-slate-500">
+                              {transaction.accountId === selectedAccountDetails.id ? 'Keluar' : 'Masuk'}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-slate-200 bg-slate-50">
+              <button
+                onClick={() => setSelectedAccountDetails(null)}
+                className="w-full py-3 bg-slate-200 text-slate-700 rounded-2xl hover:bg-slate-300 transition-colors duration-200 font-semibold button-press focus-ring"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
