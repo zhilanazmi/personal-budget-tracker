@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Minus, Calendar, Tag, FileText, Wallet } from 'lucide-react';
+import { Plus, Minus, Calendar, Tag, FileText, Wallet, DollarSign } from 'lucide-react';
 import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
 import { Transaction } from '../types';
@@ -155,7 +155,7 @@ const TransactionForm: React.FC = () => {
               Pilih Akun
             </label>
             <div className="relative">
-              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl">
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
                 <Wallet className="text-slate-600 w-6 h-6" />
               </div>
               <select
@@ -164,6 +164,12 @@ const TransactionForm: React.FC = () => {
                 onChange={(e) => setFormData({ ...formData, accountId: e.target.value })}
                 className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
                 required
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 1.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em'
+                }}
               >
                 <option value="">Pilih akun</option>
                 {accounts.map((account) => (
@@ -172,6 +178,16 @@ const TransactionForm: React.FC = () => {
                   </option>
                 ))}
               </select>
+              
+              {/* Color indicator for selected account */}
+              {selectedAccount && (
+                <div className="absolute right-12 top-1/2 transform -translate-y-1/2">
+                  <div 
+                    className="w-6 h-6 rounded-full border-2 border-white shadow-lg"
+                    style={{ backgroundColor: selectedAccount.color }}
+                  />
+                </div>
+              )}
             </div>
             {selectedAccount && (
               <p className="mt-3 text-slate-600 font-medium">
@@ -186,8 +202,8 @@ const TransactionForm: React.FC = () => {
               Jumlah
             </label>
             <div className="relative">
-              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl">
-                <span className="text-slate-600 font-bold text-lg">Rp</span>
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
+                <DollarSign className="text-slate-600 w-6 h-6" />
               </div>
               <input
                 type="text"
@@ -203,6 +219,9 @@ const TransactionForm: React.FC = () => {
                 inputMode="numeric"
                 required
               />
+              <div className="absolute right-6 top-1/2 transform -translate-y-1/2 text-slate-500 font-bold text-lg">
+                IDR
+              </div>
             </div>
           </div>
 
@@ -292,7 +311,7 @@ const TransactionForm: React.FC = () => {
               Deskripsi
             </label>
             <div className="relative">
-              <div className="absolute left-6 top-6 p-2 bg-slate-100 rounded-xl">
+              <div className="absolute left-6 top-6 p-2 bg-slate-100 rounded-xl z-10">
                 <FileText className="text-slate-600 w-6 h-6" />
               </div>
               <input
@@ -313,7 +332,7 @@ const TransactionForm: React.FC = () => {
               Tanggal
             </label>
             <div className="relative">
-              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl">
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
                 <Calendar className="text-slate-600 w-6 h-6" />
               </div>
               <input
