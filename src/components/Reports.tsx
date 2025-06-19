@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, TrendingUp, PieChart, ChevronDown, BarChart3 } from 'lucide-react';
+import { PieChart as RechartsPieChart, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { useBudget } from '../hooks/useBudget';
 import { formatCurrency, getDateRange, formatDate } from '../utils/dateUtils';
 import { DateRange } from '../types';
@@ -39,56 +40,141 @@ const Reports: React.FC = () => {
 
   const reportData = getReportData(getDateRangeForPeriod());
 
+  // Prepare data for charts
+  const pieChartData = Object.entries(reportData.categoryBreakdown)
+    .map(([category, amount]) => ({
+      name: category,
+      value: amount,
+      color: categories.find(c => c.name === category)?.color || '#6B7280',
+    }))
+    .sort((a, b) => b.value - a.value);
+
+  const barChartData = pieChartData.slice(0, 8); // Top 8 categories for better visibility
+
+  const COLORS = pieChartData.map(item => item.color);
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-4 rounded-xl shadow-lg border border-slate-200">
+          <p className="font-semibold text-slate-800">{label || payload[0].payload.name}</p>
+          <p className="text-emerald-600 font-bold">
+            {formatCurrency(payload[0].value)}
+          </p>
+          {reportData.totalExpenses > 0 && (
+            <p className="text-slate-500 text-sm">
+              {((payload[0].value / reportData.totalExpenses) * 100).toFixed(1)}% dari total
+            </p>
+          )}
+        </div>
+      );
+    }
+    return null;
+  };
+
   const CategoryChart = () => {
     const total = reportData.totalExpenses;
     if (total === 0) return null;
 
-    const categoryData = Object.entries(reportData.categoryBreakdown)
-      .map(([category, amount]) => ({
-        category,
-        amount,
-        percentage: (amount / total) * 100,
-        color: categories.find(c => c.name === category)?.color || '#6B7280',
-      }))
-      .sort((a, b) => b.amount - a.amount);
-
     return (
-      <div className="space-y-6">
-        {categoryData.map(({ category, amount, percentage, color }, index) => (
-          <div 
-            key={category} 
-            className="space-y-4 fade-in"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-4">
-                <div 
-                  className="w-6 h-6 rounded-full shadow-sm"
-                  style={{ backgroundColor: color }}
-                />
-                <span className="text-lg font-bold text-slate-700">{category}</span>
-              </div>
-              <div className="text-right">
-                <span className="text-2xl font-bold text-slate-800">
-                  {formatCurrency(amount)}
-                </span>
-                <span className="text-lg text-slate-500 ml-3 block sm:inline">
-                  {percentage.toFixed(1)}%
-                </span>
-              </div>
-            </div>
-            <div className="w-full bg-slate-200 rounded-full h-4 overflow-hidden">
-              <div
-                className="h-4 rounded-full transition-all duration-1000 ease-out shadow-sm"
-                style={{
-                  width: `${percentage}%`,
-                  backgroundColor: color,
-                  animationDelay: `${index * 100 + 500}ms`,
-                }}
-              />
+      <div className="space-y-8">
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Pie Chart */}
+          <div className="glass-effect rounded-3xl p-6 border border-white/20">
+            <h4 className="text-xl font-bold text-slate-800 mb-6 text-center">Distribusi Pengeluaran</h4>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsPieChart>
+                  <Pie
+                    data={pieChartData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {pieChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                </RechartsPieChart>
+              </ResponsiveContainer>
             </div>
           </div>
-        ))}
+
+          {/* Bar Chart */}
+          <div className="glass-effect rounded-3xl p-6 border border-white/20">
+            <h4 className="text-xl font-bold text-slate-800 mb-6 text-center">Top Kategori Pengeluaran</h4>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={barChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fontSize: 12 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(value) => formatCurrency(value).replace('Rp', 'Rp ')}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                    {barChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        {/* Detailed List */}
+        <div className="space-y-4">
+          <h4 className="text-xl font-bold text-slate-800 mb-4">Rincian Detail</h4>
+          {pieChartData.map(({ name, value, color }, index) => (
+            <div 
+              key={name} 
+              className="space-y-4 fade-in"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <div 
+                    className="w-6 h-6 rounded-full shadow-sm"
+                    style={{ backgroundColor: color }}
+                  />
+                  <span className="text-lg font-bold text-slate-700">{name}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-2xl font-bold text-slate-800">
+                    {formatCurrency(value)}
+                  </span>
+                  <span className="text-lg text-slate-500 ml-3 block sm:inline">
+                    {((value / total) * 100).toFixed(1)}%
+                  </span>
+                </div>
+              </div>
+              <div className="w-full bg-slate-200 rounded-full h-4 overflow-hidden">
+                <div
+                  className="h-4 rounded-full transition-all duration-1000 ease-out shadow-sm"
+                  style={{
+                    width: `${(value / total) * 100}%`,
+                    backgroundColor: color,
+                    animationDelay: `${index * 100 + 500}ms`,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   };
