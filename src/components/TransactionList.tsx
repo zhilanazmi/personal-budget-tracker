@@ -3,7 +3,6 @@ import { Search, Calendar, Filter, Trash2, ChevronDown, Eye, Plus, Minus, ArrowR
 import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
 import { formatCurrency, formatDate } from '../utils/dateUtils';
-import { getIconComponent } from '../utils/iconUtils';
 
 const TransactionList: React.FC = () => {
   const { transactions, deleteTransaction, loading, accounts } = useBudget();
@@ -72,15 +71,8 @@ const TransactionList: React.FC = () => {
     }
   };
 
-  const getTransactionIcon = (transaction: any) => {
-    // Use custom icon if available, otherwise use default based on type
-    if (transaction.icon) {
-      const IconComponent = getIconComponent(transaction.icon);
-      return <IconComponent className="w-5 h-5 sm:w-6 sm:h-6" />;
-    }
-    
-    // Fallback to type-based icons
-    switch (transaction.type) {
+  const getTransactionIcon = (type: string) => {
+    switch (type) {
       case 'income':
         return <Plus className="w-5 h-5 sm:w-6 sm:h-6" />;
       case 'expense':
@@ -236,7 +228,7 @@ const TransactionList: React.FC = () => {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-start space-x-3 min-w-0 flex-1">
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg text-white ${getTransactionColor(transaction.type)}`}>
-                        {getTransactionIcon(transaction)}
+                        {getTransactionIcon(transaction.type)}
                       </div>
                       <div className="min-w-0 flex-1">
                         <h4 className="font-bold text-slate-800 text-base truncate mb-1">{transaction.description}</h4>
@@ -274,7 +266,7 @@ const TransactionList: React.FC = () => {
                 <div className="hidden sm:flex items-center justify-between">
                   <div className="flex items-center space-x-4 lg:space-x-6 min-w-0 flex-1">
                     <div className={`w-12 h-12 lg:w-16 lg:h-16 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg text-white ${getTransactionColor(transaction.type)}`}>
-                      {getTransactionIcon(transaction)}
+                      {getTransactionIcon(transaction.type)}
                     </div>
                     <div className="min-w-0 flex-1">
                       <h4 className="font-bold text-slate-800 text-lg lg:text-xl truncate mb-2">{transaction.description}</h4>

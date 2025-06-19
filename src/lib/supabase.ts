@@ -17,40 +17,31 @@ export type Database = {
           id: string;
           user_id: string;
           amount: number;
-          type: 'income' | 'expense' | 'transfer';
+          type: 'income' | 'expense';
           category: string;
           description: string;
           date: string;
           created_at: string;
-          account_id: string | null;
-          transfer_to_account_id: string | null;
-          icon: string;
         };
         Insert: {
           id?: string;
           user_id: string;
           amount: number;
-          type: 'income' | 'expense' | 'transfer';
+          type: 'income' | 'expense';
           category: string;
           description: string;
           date: string;
           created_at?: string;
-          account_id?: string | null;
-          transfer_to_account_id?: string | null;
-          icon?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
           amount?: number;
-          type?: 'income' | 'expense' | 'transfer';
+          type?: 'income' | 'expense';
           category?: string;
           description?: string;
           date?: string;
           created_at?: string;
-          account_id?: string | null;
-          transfer_to_account_id?: string | null;
-          icon?: string;
         };
       };
       categories: {
@@ -82,41 +73,6 @@ export type Database = {
           color?: string;
           type?: 'expense' | 'income';
           is_custom?: boolean;
-          created_at?: string;
-        };
-      };
-      accounts: {
-        Row: {
-          id: string;
-          user_id: string;
-          name: string;
-          type: 'bank' | 'cash' | 'digital_wallet' | 'credit_card' | 'savings' | 'investment' | 'other';
-          balance: number;
-          color: string;
-          icon: string;
-          is_active: boolean;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          name: string;
-          type?: 'bank' | 'cash' | 'digital_wallet' | 'credit_card' | 'savings' | 'investment' | 'other';
-          balance?: number;
-          color?: string;
-          icon?: string;
-          is_active?: boolean;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          name?: string;
-          type?: 'bank' | 'cash' | 'digital_wallet' | 'credit_card' | 'savings' | 'investment' | 'other';
-          balance?: number;
-          color?: string;
-          icon?: string;
-          is_active?: boolean;
           created_at?: string;
         };
       };

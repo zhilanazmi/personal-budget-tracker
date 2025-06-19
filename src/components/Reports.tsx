@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, TrendingUp, PieChart, ChevronDown, BarChart3 } from 'lucide-react';
-import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { PieChart as RechartsPieChart, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { useBudget } from '../hooks/useBudget';
 import { formatCurrency, getDateRange, formatDate } from '../utils/dateUtils';
 import { DateRange } from '../types';

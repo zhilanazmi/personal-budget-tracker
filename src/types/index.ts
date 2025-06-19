@@ -8,7 +8,6 @@ export interface Transaction {
   createdAt: string;
   accountId?: string;
   transferToAccountId?: string;
-  icon?: string;
 }
 
 export interface Category {

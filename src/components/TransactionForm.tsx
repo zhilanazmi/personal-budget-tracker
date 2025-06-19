@@ -4,8 +4,6 @@ import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
 import { Transaction } from '../types';
 import { formatCurrency, formatNumberWithDots, parseFormattedNumber, getTodayDateString } from '../utils/dateUtils';
-import IconPicker from './IconPicker';
-import { getIconComponent } from '../utils/iconUtils';
 
 const TransactionForm: React.FC = () => {
   const { addTransaction, categories, incomeCategories, accounts } = useBudget();
@@ -17,11 +15,9 @@ const TransactionForm: React.FC = () => {
     description: '',
     date: new Date().toISOString().split('T')[0],
     accountId: '',
-    icon: 'Tag',
   });
   const [displayAmount, setDisplayAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showIconPicker, setShowIconPicker] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +52,6 @@ const TransactionForm: React.FC = () => {
         description: formData.description,
         date: formData.date,
         accountId: formData.accountId,
-        icon: formData.icon,
       };
 
       // DEBUG: Log transaksi yang akan ditambahkan
@@ -76,7 +71,6 @@ const TransactionForm: React.FC = () => {
         description: '',
         date: new Date().toISOString().split('T')[0],
         accountId: '',
-        icon: 'Tag',
       });
       setDisplayAmount('');
       
@@ -93,17 +87,6 @@ const TransactionForm: React.FC = () => {
 
   const availableCategories = formData.type === 'income' ? incomeCategories : categories;
   const selectedAccount = accounts.find(acc => acc.id === formData.accountId);
-  const selectedCategory = availableCategories.find(cat => cat.name === formData.category);
-  const IconComponent = getIconComponent(formData.icon);
-
-  const handleCategoryChange = (categoryName: string) => {
-    const category = availableCategories.find(cat => cat.name === categoryName);
-    setFormData({ 
-      ...formData, 
-      category: categoryName,
-      icon: category?.icon || 'Tag'
-    });
-  };
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -129,7 +112,7 @@ const TransactionForm: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, type: 'expense', category: '', accountId: '', icon: 'Tag' })}
+                onClick={() => setFormData({ ...formData, type: 'expense', category: '', accountId: '' })}
                 className={`flex items-center justify-center space-x-4 py-6 px-6 rounded-3xl border-2 transition-all duration-300 button-press focus-ring ${
                   formData.type === 'expense'
                     ? 'border-red-300 bg-gradient-to-br from-red-50 to-red-100 text-red-700 shadow-lg shadow-red-500/20'
@@ -147,7 +130,7 @@ const TransactionForm: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, type: 'income', category: '', accountId: '', icon: 'Tag' })}
+                onClick={() => setFormData({ ...formData, type: 'income', category: '', accountId: '' })}
                 className={`flex items-center justify-center space-x-4 py-6 px-6 rounded-3xl border-2 transition-all duration-300 button-press focus-ring ${
                   formData.type === 'income'
                     ? 'border-emerald-300 bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-700 shadow-lg shadow-emerald-500/20'
@@ -235,7 +218,7 @@ const TransactionForm: React.FC = () => {
               <select
                 id="category"
                 value={formData.category}
-                onChange={(e) => handleCategoryChange(e.target.value)}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
                 required
               >
@@ -247,46 +230,6 @@ const TransactionForm: React.FC = () => {
                 ))}
               </select>
             </div>
-            
-            {/* Category Preview with Icon */}
-            {selectedCategory && (
-              <div className="mt-4 p-4 bg-white/40 rounded-2xl border border-white/30">
-                <div className="flex items-center space-x-4">
-                  <div 
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg"
-                    style={{ backgroundColor: selectedCategory.color }}
-                  >
-                    <IconComponent className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-slate-800">{selectedCategory.name}</p>
-                    <p className="text-sm text-slate-500">Kategori yang dipilih</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Custom Icon Selection */}
-          <div className="fade-in" style={{ animationDelay: '450ms' }}>
-            <label className="block text-lg font-bold text-slate-700 mb-4">
-              Ikon Transaksi (Opsional)
-            </label>
-            <button
-              type="button"
-              onClick={() => setShowIconPicker(true)}
-              className="flex items-center space-x-4 px-6 py-4 border-2 border-slate-200 rounded-2xl hover:border-slate-300 transition-all duration-200 bg-white/60 focus-ring w-full"
-            >
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold shadow-lg ${
-                formData.type === 'income' ? 'bg-emerald-500' : 'bg-red-500'
-              }`}>
-                <IconComponent className="w-6 h-6" />
-              </div>
-              <div className="text-left flex-1">
-                <p className="font-semibold text-slate-800">{formData.icon}</p>
-                <p className="text-sm text-slate-500">Klik untuk mengubah ikon</p>
-              </div>
-            </button>
           </div>
 
           {/* Description */}
@@ -347,24 +290,12 @@ const TransactionForm: React.FC = () => {
                   <span>Menambahkan...</span>
                 </div>
               ) : (
-                <div className="flex items-center justify-center space-x-3">
-                  <IconComponent className="w-6 h-6" />
-                  <span>Tambah {formData.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}</span>
-                </div>
+                `Tambah ${formData.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}`
               )}
             </button>
           </div>
         </form>
       </div>
-
-      {/* Icon Picker Modal */}
-      {showIconPicker && (
-        <IconPicker
-          selectedIcon={formData.icon}
-          onIconSelect={(iconName) => setFormData({ ...formData, icon: iconName })}
-          onClose={() => setShowIconPicker(false)}
-        />
-      )}
     </div>
   );
 };
