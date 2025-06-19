@@ -3,7 +3,6 @@ import { Trash2, Plus, Palette, ChevronDown, Settings as SettingsIcon, Edit2, X 
 import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
 import { Category } from '../types';
-import IconPicker from './IconPicker';
 
 const Settings: React.FC = () => {
   const { addCategory, updateCategory, deleteCategory, categories, incomeCategories, loading } = useBudget();
@@ -15,14 +14,11 @@ const Settings: React.FC = () => {
     type: 'expense' as 'expense' | 'income'
   });
   const [showAddCategory, setShowAddCategory] = useState(false);
-  const [showIconPicker, setShowIconPicker] = useState(false);
-  const [iconPickerFor, setIconPickerFor] = useState<'new' | 'edit'>('new');
   const [editingCategory, setEditingCategory] = useState<{
     category: Category;
     isIncome: boolean;
     name: string;
     color: string;
-    icon: string;
   } | null>(null);
 
   if (loading) {
@@ -71,7 +67,6 @@ const Settings: React.FC = () => {
         {
           name: editingCategory.name.trim(),
           color: editingCategory.color,
-          icon: editingCategory.icon,
         },
         editingCategory.isIncome
       );
@@ -92,15 +87,6 @@ const Settings: React.FC = () => {
         showToast(errorMessage, 'error');
       }
     }
-  };
-
-  const handleIconSelect = (iconName: string) => {
-    if (iconPickerFor === 'new') {
-      setNewCategory({ ...newCategory, icon: iconName });
-    } else if (editingCategory) {
-      setEditingCategory({ ...editingCategory, icon: iconName });
-    }
-    setShowIconPicker(false);
   };
 
   const predefinedColors = [
@@ -140,8 +126,7 @@ const Settings: React.FC = () => {
           category,
           isIncome,
           name: category.name,
-          color: category.color,
-          icon: category.icon
+          color: category.color
         })}
         className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-colors duration-200 focus-ring"
         title="Edit kategori"
@@ -247,30 +232,6 @@ const Settings: React.FC = () => {
                   </div>
                 </label>
               </div>
-            </div>
-
-            {/* Icon Selection */}
-            <div>
-              <label className="block text-lg font-bold text-slate-700 mb-4">
-                Ikon
-              </label>
-              <button
-                type="button"
-                onClick={() => {
-                  setIconPickerFor('new');
-                  setShowIconPicker(true);
-                }}
-                className="flex items-center space-x-4 px-6 py-4 border-2 border-slate-200 rounded-2xl hover:border-slate-300 transition-all duration-200 bg-white/60 focus-ring"
-              >
-                <div 
-                  className="w-12 h-12 rounded-xl shadow-lg"
-                  style={{ backgroundColor: newCategory.color }}
-                />
-                <div className="text-left">
-                  <p className="font-semibold text-slate-800">{newCategory.icon}</p>
-                  <p className="text-sm text-slate-500">Klik untuk mengubah ikon</p>
-                </div>
-              </button>
             </div>
 
             <div>
@@ -382,15 +343,6 @@ const Settings: React.FC = () => {
         </div>
       </div>
 
-      {/* Icon Picker Modal */}
-      {showIconPicker && (
-        <IconPicker
-          selectedIcon={iconPickerFor === 'new' ? newCategory.icon : editingCategory?.icon || ''}
-          onIconSelect={handleIconSelect}
-          onClose={() => setShowIconPicker(false)}
-        />
-      )}
-
       {/* Edit Category Modal */}
       {editingCategory && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
@@ -418,30 +370,6 @@ const Settings: React.FC = () => {
                   placeholder="Masukkan nama kategori"
                   required
                 />
-              </div>
-
-              {/* Icon Selection for Edit */}
-              <div>
-                <label className="block text-lg font-bold text-slate-700 mb-3">
-                  Ikon
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIconPickerFor('edit');
-                    setShowIconPicker(true);
-                  }}
-                  className="flex items-center space-x-3 px-4 py-3 border-2 border-slate-200 rounded-xl hover:border-slate-300 transition-all duration-200 bg-white focus-ring w-full"
-                >
-                  <div 
-                    className="w-10 h-10 rounded-lg shadow-lg"
-                    style={{ backgroundColor: editingCategory.color }}
-                  />
-                  <div className="text-left">
-                    <p className="font-semibold text-slate-800">{editingCategory.icon}</p>
-                    <p className="text-sm text-slate-500">Klik untuk mengubah</p>
-                  </div>
-                </button>
               </div>
 
               <div>
