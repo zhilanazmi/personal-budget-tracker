@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Download, Upload, Trash2, Plus, Palette, ChevronDown, Settings as SettingsIcon } from 'lucide-react';
+import { Trash2, Plus, Palette, ChevronDown, Settings as SettingsIcon, Edit2, X } from 'lucide-react';
 import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
+import { Category } from '../types';
 
 const Settings: React.FC = () => {
-  const { addCategory, categories, incomeCategories, loading } = useBudget();
+  const { addCategory, updateCategory, deleteCategory, categories, incomeCategories, loading } = useBudget();
   const { showToast } = useToast();
   const [newCategory, setNewCategory] = useState({ 
     name: '', 
@@ -13,6 +14,12 @@ const Settings: React.FC = () => {
     type: 'expense' as 'expense' | 'income'
   });
   const [showAddCategory, setShowAddCategory] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<{
+    category: Category;
+    isIncome: boolean;
+    name: string;
+    color: string;
+  } | null>(null);
 
   if (loading) {
     return (
@@ -44,8 +51,40 @@ const Settings: React.FC = () => {
         });
         setShowAddCategory(false);
         showToast('Kategori berhasil ditambahkan!', 'success');
-      } catch (error) {
+      } catch {
         showToast('Gagal menambahkan kategori. Silakan coba lagi.', 'error');
+      }
+    }
+  };
+
+  const handleEditCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCategory) return;
+
+    try {
+      await updateCategory(
+        editingCategory.category.id,
+        {
+          name: editingCategory.name.trim(),
+          color: editingCategory.color,
+        },
+        editingCategory.isIncome
+      );
+      setEditingCategory(null);
+      showToast('Kategori berhasil diperbarui!', 'success');
+          } catch {
+        showToast('Gagal memperbarui kategori. Silakan coba lagi.', 'error');
+      }
+  };
+
+  const handleDeleteCategory = async (categoryId: string, isIncome: boolean, categoryName: string) => {
+    if (window.confirm(`Apakah Anda yakin ingin menghapus kategori "${categoryName}"?`)) {
+      try {
+        await deleteCategory(categoryId, isIncome);
+        showToast('Kategori berhasil dihapus!', 'success');
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Gagal menghapus kategori. Silakan coba lagi.';
+        showToast(errorMessage, 'error');
       }
     }
   };
@@ -54,6 +93,55 @@ const Settings: React.FC = () => {
     '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
     '#EC4899', '#F97316', '#06B6D4', '#84CC16', '#6B7280'
   ];
+
+  const CategoryItem = ({ 
+    category, 
+    isIncome, 
+    index 
+  }: { 
+    category: Category; 
+    isIncome: boolean; 
+    index: number;
+  }) => (
+    <div
+      className="flex items-center space-x-4 p-6 border-2 border-white/30 rounded-2xl bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 fade-in"
+      style={{ animationDelay: `${300 + index * 50}ms` }}
+    >
+      <div
+        className="w-8 h-8 rounded-full shadow-sm"
+        style={{ backgroundColor: category.color }}
+      />
+      <span className="text-lg font-bold text-slate-800 flex-1">{category.name}</span>
+      
+      {/* Show label for custom categories */}
+      {category.isCustom && (
+        <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full font-semibold">
+          Kustom
+        </span>
+      )}
+      
+      {/* Edit and Delete buttons for ALL categories */}
+      <button
+        onClick={() => setEditingCategory({
+          category,
+          isIncome,
+          name: category.name,
+          color: category.color
+        })}
+        className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-colors duration-200 focus-ring"
+        title="Edit kategori"
+      >
+        <Edit2 className="w-4 h-4" />
+      </button>
+      <button
+        onClick={() => handleDeleteCategory(category.id, isIncome, category.name)}
+        className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-xl transition-colors duration-200 focus-ring"
+        title="Hapus kategori"
+      >
+        <Trash2 className="w-4 h-4" />
+      </button>
+    </div>
+  );
 
   return (
     <div className="space-y-8">
@@ -201,22 +289,12 @@ const Settings: React.FC = () => {
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {categories.map((category, index) => (
-              <div
+              <CategoryItem
                 key={category.id}
-                className="flex items-center space-x-4 p-6 border-2 border-white/30 rounded-2xl bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 fade-in"
-                style={{ animationDelay: `${300 + index * 50}ms` }}
-              >
-                <div
-                  className="w-8 h-8 rounded-full shadow-sm"
-                  style={{ backgroundColor: category.color }}
-                />
-                <span className="text-lg font-bold text-slate-800 flex-1">{category.name}</span>
-                {category.isCustom && (
-                  <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full font-semibold">
-                    Kustom
-                  </span>
-                )}
-              </div>
+                category={category}
+                isIncome={false}
+                index={index}
+              />
             ))}
           </div>
         </div>
@@ -229,22 +307,12 @@ const Settings: React.FC = () => {
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {incomeCategories.map((category, index) => (
-              <div
+              <CategoryItem
                 key={category.id}
-                className="flex items-center space-x-4 p-6 border-2 border-white/30 rounded-2xl bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 fade-in"
-                style={{ animationDelay: `${400 + index * 50}ms` }}
-              >
-                <div
-                  className="w-8 h-8 rounded-full shadow-sm"
-                  style={{ backgroundColor: category.color }}
-                />
-                <span className="text-lg font-bold text-slate-800 flex-1">{category.name}</span>
-                {category.isCustom && (
-                  <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full font-semibold">
-                    Kustom
-                  </span>
-                )}
-              </div>
+                category={category}
+                isIncome={true}
+                index={index}
+              />
             ))}
           </div>
         </div>
@@ -274,6 +342,74 @@ const Settings: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Category Modal */}
+      {editingCategory && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-8 mx-4 w-full max-w-md shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-slate-800">Edit Kategori</h3>
+              <button
+                onClick={() => setEditingCategory(null)}
+                className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors duration-200 focus-ring"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditCategory} className="space-y-6">
+              <div>
+                <label className="block text-lg font-bold text-slate-700 mb-3">
+                  Nama Kategori
+                </label>
+                <input
+                  type="text"
+                  value={editingCategory.name}
+                  onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-semibold"
+                  placeholder="Masukkan nama kategori"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-lg font-bold text-slate-700 mb-3">
+                  Warna
+                </label>
+                <div className="grid grid-cols-5 gap-3">
+                  {predefinedColors.map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => setEditingCategory({ ...editingCategory, color })}
+                      className={`w-12 h-12 rounded-xl border-4 transition-all duration-200 button-press focus-ring ${
+                        editingCategory.color === color ? 'border-slate-400 scale-110 shadow-lg' : 'border-slate-200 hover:border-slate-300'
+                      }`}
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex space-x-4">
+                <button
+                  type="submit"
+                  className="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl hover:from-emerald-600 hover:to-green-700 transition-all duration-300 font-bold button-press focus-ring shadow-lg shadow-emerald-500/30"
+                >
+                  Simpan
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingCategory(null)}
+                  className="px-6 py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-all duration-300 font-bold border-2 border-slate-200 hover:border-slate-300 button-press focus-ring"
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

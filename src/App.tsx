@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, LogOut } from 'lucide-react';
+import { Menu, LogOut } from 'lucide-react';
 import { useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -53,7 +53,7 @@ function AppContent() {
 
   const renderContent = () => {
     const contentMap = {
-      dashboard: <Dashboard />,
+      dashboard: <Dashboard onNavigate={setActiveTab} />,
       accounts: <AccountManager />,
       add: <TransactionForm />,
       transfer: <TransferForm />,
@@ -63,7 +63,7 @@ function AppContent() {
       settings: <Settings />,
     };
     
-    return contentMap[activeTab as keyof typeof contentMap] || <Dashboard />;
+    return contentMap[activeTab as keyof typeof contentMap] || <Dashboard onNavigate={setActiveTab} />;
   };
 
   // Show loading screen

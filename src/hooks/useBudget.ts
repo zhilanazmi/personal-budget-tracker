@@ -416,6 +416,132 @@ export const useBudget = () => {
     }
   };
 
+  const updateCategory = async (id: string, updates: Partial<Category>, isIncome = false) => {
+    if (!user) return;
+
+    try {
+      // For default categories (user_id is null), we need to handle differently
+      const categoryList = isIncome ? incomeCategories : categories;
+      const category = categoryList.find(cat => cat.id === id);
+      
+      if (!category) throw new Error('Kategori tidak ditemukan');
+
+      // If it's a default category (no user_id), create a new custom category for this user
+      if (!category.isCustom) {
+        // Create a new custom category with the updated values
+        const { data, error } = await supabase
+          .from('categories')
+          .insert([
+            {
+              user_id: user.id,
+              name: updates.name || category.name,
+              icon: updates.icon || category.icon,
+              color: updates.color || category.color,
+              type: isIncome ? 'income' : 'expense',
+              is_custom: true,
+            }
+          ])
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        const newCategory: Category = {
+          id: data.id,
+          name: data.name,
+          icon: data.icon,
+          color: data.color,
+          isCustom: data.is_custom,
+        };
+
+        // Add new custom category and remove old default one from local state
+        if (isIncome) {
+          setIncomeCategories(prev => 
+            prev.filter(cat => cat.id !== id).concat(newCategory)
+          );
+        } else {
+          setCategories(prev => 
+            prev.filter(cat => cat.id !== id).concat(newCategory)
+          );
+        }
+      } else {
+        // For custom categories, update normally
+        const { error } = await supabase
+          .from('categories')
+          .update({
+            name: updates.name,
+            icon: updates.icon,
+            color: updates.color,
+          })
+          .eq('id', id)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+
+        // Update local state
+        if (isIncome) {
+          setIncomeCategories(prev => 
+            prev.map(cat => cat.id === id ? { ...cat, ...updates } : cat)
+          );
+        } else {
+          setCategories(prev => 
+            prev.map(cat => cat.id === id ? { ...cat, ...updates } : cat)
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error updating category:', error);
+      throw error;
+    }
+  };
+
+  const deleteCategory = async (id: string, isIncome = false) => {
+    if (!user) return;
+
+    try {
+      const categoryList = isIncome ? incomeCategories : categories;
+      const category = categoryList.find(cat => cat.id === id);
+      
+      if (!category) throw new Error('Kategori tidak ditemukan');
+
+      // Check if category is being used in transactions
+      const { data: transactionCheck, error: checkError } = await supabase
+        .from('transactions')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('category', category.name)
+        .limit(1);
+
+      if (checkError) throw checkError;
+
+      if (transactionCheck && transactionCheck.length > 0) {
+        throw new Error('Kategori tidak dapat dihapus karena masih digunakan dalam transaksi');
+      }
+
+      // For default categories, just remove from local state (can't delete from DB)
+      // For custom categories, delete from DB
+      if (category.isCustom) {
+        const { error } = await supabase
+          .from('categories')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+      }
+
+      // Update local state (remove category regardless of type)
+      if (isIncome) {
+        setIncomeCategories(prev => prev.filter(cat => cat.id !== id));
+      } else {
+        setCategories(prev => prev.filter(cat => cat.id !== id));
+      }
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      throw error;
+    }
+  };
+
   const getReportData = (dateRange?: DateRange): ReportData => {
     let filteredTransactions = transactions;
     
@@ -464,6 +590,8 @@ export const useBudget = () => {
     addTransaction,
     deleteTransaction,
     addCategory,
+    updateCategory,
+    deleteCategory,
     addAccount,
     updateAccount,
     deleteAccount,

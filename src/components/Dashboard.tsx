@@ -3,7 +3,11 @@ import { TrendingUp, TrendingDown, CreditCard, ArrowRight, BarChart3, Sparkles, 
 import { formatCurrency, getDateRange } from '../utils/dateUtils';
 import { useBudget } from '../hooks/useBudget';
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onNavigate?: (tab: string) => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const { getReportData, accounts, loading } = useBudget();
   
   if (loading) {
@@ -36,7 +40,7 @@ const Dashboard: React.FC = () => {
   }: {
     title: string;
     amount: number;
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
     trend?: string;
     color?: string;
     delay?: number;
@@ -148,7 +152,10 @@ const Dashboard: React.FC = () => {
             </div>
             <h3 className="text-2xl font-bold text-slate-800">Saldo Akun</h3>
           </div>
-          <button className="p-2 hover:bg-white/50 rounded-xl transition-colors duration-200 focus-ring">
+          <button 
+            onClick={() => onNavigate?.('accounts')}
+            className="p-2 hover:bg-white/50 rounded-xl transition-colors duration-200 focus-ring"
+          >
             <ArrowRight className="w-5 h-5 text-slate-500" />
           </button>
         </div>
@@ -205,7 +212,10 @@ const Dashboard: React.FC = () => {
               </div>
               <h3 className="text-2xl font-bold text-slate-800">Aktivitas Terbaru</h3>
             </div>
-            <button className="p-2 hover:bg-white/50 rounded-xl transition-colors duration-200 focus-ring">
+            <button 
+              onClick={() => onNavigate?.('transactions')}
+              className="p-2 hover:bg-white/50 rounded-xl transition-colors duration-200 focus-ring"
+            >
               <ArrowRight className="w-5 h-5 text-slate-500" />
             </button>
           </div>
@@ -266,7 +276,10 @@ const Dashboard: React.FC = () => {
               </div>
               <h3 className="text-2xl font-bold text-slate-800">Kategori Teratas</h3>
             </div>
-            <button className="p-2 hover:bg-white/50 rounded-xl transition-colors duration-200 focus-ring">
+            <button 
+              onClick={() => onNavigate?.('analytics')}
+              className="p-2 hover:bg-white/50 rounded-xl transition-colors duration-200 focus-ring"
+            >
               <ArrowRight className="w-5 h-5 text-slate-500" />
             </button>
           </div>
