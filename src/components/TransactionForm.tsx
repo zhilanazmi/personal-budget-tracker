@@ -3,7 +3,7 @@ import { Plus, Minus, Calendar, Tag, FileText, Wallet } from 'lucide-react';
 import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
 import { Transaction } from '../types';
-import { formatCurrency, formatNumberWithDots, parseFormattedNumber } from '../utils/dateUtils';
+import { formatCurrency, formatNumberWithDots, parseFormattedNumber, getTodayDateString } from '../utils/dateUtils';
 
 const TransactionForm: React.FC = () => {
   const { addTransaction, categories, incomeCategories, accounts } = useBudget();
@@ -53,6 +53,13 @@ const TransactionForm: React.FC = () => {
         date: formData.date,
         accountId: formData.accountId,
       };
+
+      // DEBUG: Log transaksi yang akan ditambahkan
+      console.log('=== DEBUG TAMBAH TRANSAKSI ===');
+      console.log('Tanggal hari ini (sistem):', getTodayDateString());
+      console.log('Transaksi yang akan ditambahkan:', transaction);
+      console.log('Apakah transaksi ini hari ini?', transaction.date === getTodayDateString());
+      console.log('=============================');
 
       await addTransaction(transaction);
       

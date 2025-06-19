@@ -1,16 +1,31 @@
 import React, { useState } from 'react';
-import { Search, Calendar, Filter, Trash2, ChevronDown, Eye, Plus, Minus, ArrowRightLeft } from 'lucide-react';
+import { Search, Calendar, Filter, Trash2, ChevronDown, Eye, Plus, Minus, ArrowRightLeft, Wallet } from 'lucide-react';
 import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
 import { formatCurrency, formatDate } from '../utils/dateUtils';
 
 const TransactionList: React.FC = () => {
-  const { transactions, deleteTransaction, loading } = useBudget();
+  const { transactions, deleteTransaction, loading, accounts } = useBudget();
   const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense' | 'transfer'>('all');
   const [sortBy, setSortBy] = useState<'date' | 'amount'>('date');
   const [showFilters, setShowFilters] = useState(false);
+
+  // Helper function to get account name by ID
+  const getAccountName = (accountId?: string) => {
+    if (!accountId) return 'Akun tidak diketahui';
+    const account = accounts.find(acc => acc.id === accountId);
+    return account ? account.name : 'Akun tidak ditemukan';
+  };
+
+  // Helper function to get account display text for transfer transactions
+  const getAccountDisplayText = (transaction: any) => {
+    if (transaction.type === 'transfer' && transaction.transferToAccountId) {
+      return `${getAccountName(transaction.accountId)} → ${getAccountName(transaction.transferToAccountId)}`;
+    }
+    return getAccountName(transaction.accountId);
+  };
 
   if (loading) {
     return (
@@ -30,8 +45,10 @@ const TransactionList: React.FC = () => {
 
   const filteredTransactions = transactions
     .filter(transaction => {
+      const accountText = getAccountDisplayText(transaction).toLowerCase();
       const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           transaction.category.toLowerCase().includes(searchTerm.toLowerCase());
+                           transaction.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           accountText.includes(searchTerm.toLowerCase());
       const matchesType = filterType === 'all' || transaction.type === filterType;
       return matchesSearch && matchesType;
     })
@@ -130,7 +147,7 @@ const TransactionList: React.FC = () => {
           </div>
           <input
             type="text"
-            placeholder="Cari transaksi..."
+            placeholder="Cari transaksi, kategori, atau akun..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-14 sm:pl-20 pr-4 sm:pr-6 py-3 sm:py-5 border-2 border-slate-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-base sm:text-lg font-medium bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
@@ -219,6 +236,10 @@ const TransactionList: React.FC = () => {
                           <div className="w-2 h-2 rounded-full bg-slate-300" />
                           <span className="font-semibold truncate">{transaction.category}</span>
                         </div>
+                        <div className="flex items-center space-x-2 text-slate-500 text-sm mb-1">
+                          <Wallet className="w-3 h-3" />
+                          <span className="font-medium truncate">{getAccountDisplayText(transaction)}</span>
+                        </div>
                         <div className="flex items-center space-x-2 text-slate-500 text-sm">
                           <Calendar className="w-3 h-3" />
                           <span className="font-medium">{formatDate(transaction.date)}</span>
@@ -253,6 +274,10 @@ const TransactionList: React.FC = () => {
                         <div className="flex items-center space-x-2 mb-1 lg:mb-0">
                           <div className="w-3 h-3 rounded-full bg-slate-300" />
                           <span className="font-semibold">{transaction.category}</span>
+                        </div>
+                        <div className="flex items-center space-x-2 mb-1 lg:mb-0">
+                          <Wallet className="w-4 h-4" />
+                          <span className="font-medium">{getAccountDisplayText(transaction)}</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Calendar className="w-4 h-4" />
