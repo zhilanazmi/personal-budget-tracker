@@ -100,19 +100,13 @@ const Settings: React.FC = () => {
     } else if (editingCategory) {
       setEditingCategory({ ...editingCategory, icon: iconName });
     }
+    setShowIconPicker(false);
   };
 
   const predefinedColors = [
     '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
     '#EC4899', '#F97316', '#06B6D4', '#84CC16', '#6B7280'
   ];
-
-  // Helper function to get icon component
-  const getIconComponent = (iconName: string) => {
-    // This is a simplified version - in a real app you'd import all icons
-    // For now, we'll just show the icon name
-    return iconName;
-  };
 
   const CategoryItem = ({ 
     category, 
@@ -128,10 +122,10 @@ const Settings: React.FC = () => {
       style={{ animationDelay: `${300 + index * 50}ms` }}
     >
       <div
-        className="w-8 h-8 rounded-full shadow-sm flex items-center justify-center text-white text-xs font-bold"
+        className="w-12 h-12 rounded-xl shadow-sm flex items-center justify-center text-white text-sm font-bold"
         style={{ backgroundColor: category.color }}
       >
-        {category.icon.slice(0, 2)}
+        {category.icon.slice(0, 2).toUpperCase()}
       </div>
       <span className="text-lg font-bold text-slate-800 flex-1">{category.name}</span>
       
@@ -274,7 +268,7 @@ const Settings: React.FC = () => {
                   className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold shadow-lg"
                   style={{ backgroundColor: newCategory.color }}
                 >
-                  {newCategory.icon.slice(0, 2)}
+                  {newCategory.icon.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="text-left">
                   <p className="font-semibold text-slate-800">{newCategory.icon}</p>
@@ -447,7 +441,7 @@ const Settings: React.FC = () => {
                     className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold shadow-lg"
                     style={{ backgroundColor: editingCategory.color }}
                   >
-                    {editingCategory.icon.slice(0, 2)}
+                    {editingCategory.icon.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="text-left">
                     <p className="font-semibold text-slate-800">{editingCategory.icon}</p>
