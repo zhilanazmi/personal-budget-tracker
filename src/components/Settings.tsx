@@ -122,11 +122,9 @@ const Settings: React.FC = () => {
       style={{ animationDelay: `${300 + index * 50}ms` }}
     >
       <div
-        className="w-12 h-12 rounded-xl shadow-sm flex items-center justify-center text-white text-sm font-bold"
+        className="w-12 h-12 rounded-xl shadow-sm"
         style={{ backgroundColor: category.color }}
-      >
-        {category.icon.slice(0, 2).toUpperCase()}
-      </div>
+      />
       <span className="text-lg font-bold text-slate-800 flex-1">{category.name}</span>
       
       {/* Show label for custom categories */}
@@ -265,11 +263,9 @@ const Settings: React.FC = () => {
                 className="flex items-center space-x-4 px-6 py-4 border-2 border-slate-200 rounded-2xl hover:border-slate-300 transition-all duration-200 bg-white/60 focus-ring"
               >
                 <div 
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold shadow-lg"
+                  className="w-12 h-12 rounded-xl shadow-lg"
                   style={{ backgroundColor: newCategory.color }}
-                >
-                  {newCategory.icon.slice(0, 2).toUpperCase()}
-                </div>
+                />
                 <div className="text-left">
                   <p className="font-semibold text-slate-800">{newCategory.icon}</p>
                   <p className="text-sm text-slate-500">Klik untuk mengubah ikon</p>
@@ -438,11 +434,9 @@ const Settings: React.FC = () => {
                   className="flex items-center space-x-3 px-4 py-3 border-2 border-slate-200 rounded-xl hover:border-slate-300 transition-all duration-200 bg-white focus-ring w-full"
                 >
                   <div 
-                    className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold shadow-lg"
+                    className="w-10 h-10 rounded-lg shadow-lg"
                     style={{ backgroundColor: editingCategory.color }}
-                  >
-                    {editingCategory.icon.slice(0, 2).toUpperCase()}
-                  </div>
+                  />
                   <div className="text-left">
                     <p className="font-semibold text-slate-800">{editingCategory.icon}</p>
                     <p className="text-sm text-slate-500">Klik untuk mengubah</p>
