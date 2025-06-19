@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Minus, Calendar, Tag, FileText, Wallet } from 'lucide-react';
+import { Plus, Minus, Calendar, Tag, FileText, Wallet, Car, Coffee, ShoppingCart, FileText as Bills, Home, Film, ShoppingBag, BookOpen, Heart, PiggyBank, MoreHorizontal, Briefcase, Laptop, Building, TrendingUp } from 'lucide-react';
 import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
 import { Transaction } from '../types';
@@ -18,6 +18,16 @@ const TransactionForm: React.FC = () => {
   });
   const [displayAmount, setDisplayAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Function to get icon component from category icon name
+  const getCategoryIconComponent = (iconName: string) => {
+    const iconMap: { [key: string]: any } = {
+      Car, Coffee, ShoppingCart, FileText: Bills, Home, Film, ShoppingBag, 
+      BookOpen, Heart, PiggyBank, MoreHorizontal, Briefcase, Laptop, 
+      Building, TrendingUp, Tag, Plus, Wallet
+    };
+    return iconMap[iconName] || Tag;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -206,34 +216,64 @@ const TransactionForm: React.FC = () => {
             </div>
           </div>
 
-          {/* Category */}
+          {/* Category Selection - Enhanced Visual Grid */}
           <div className="fade-in" style={{ animationDelay: '400ms' }}>
-            <label htmlFor="category" className="block text-lg font-bold text-slate-700 mb-4">
+            <label className="block text-lg font-bold text-slate-700 mb-6">
               Kategori
             </label>
-            <div className="relative">
-              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl">
-                <Tag className="text-slate-600 w-6 h-6" />
-              </div>
-              <select
-                id="category"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
-                required
-              >
-                <option value="">Pilih kategori</option>
-                {availableCategories.map((category) => (
-                  <option key={category.id} value={category.name}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {availableCategories.map((category, index) => {
+                const IconComponent = getCategoryIconComponent(category.icon);
+                const isSelected = formData.category === category.name;
+                
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, category: category.name })}
+                    className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all duration-300 button-press focus-ring group ${
+                      isSelected
+                        ? 'border-emerald-300 bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-700 shadow-lg shadow-emerald-500/20 scale-105'
+                        : 'border-slate-200 bg-white/60 text-slate-600 hover:border-slate-300 hover:bg-white/80 hover:scale-102'
+                    }`}
+                    style={{ 
+                      animationDelay: `${500 + index * 50}ms`,
+                      minHeight: '100px'
+                    }}
+                  >
+                    <div 
+                      className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-3 transition-all duration-300 ${
+                        isSelected 
+                          ? 'shadow-lg scale-110' 
+                          : 'group-hover:scale-105'
+                      }`}
+                      style={{ backgroundColor: category.color }}
+                    >
+                      <IconComponent className="w-6 h-6 text-white" />
+                    </div>
+                    <span className={`font-bold text-sm text-center leading-tight ${
+                      isSelected ? 'text-emerald-700' : 'text-slate-700 group-hover:text-slate-800'
+                    }`}>
+                      {category.name}
+                    </span>
+                    {isSelected && (
+                      <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2 animate-pulse" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
+            {formData.category && (
+              <div className="mt-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+                <p className="text-emerald-700 font-semibold text-center">
+                  ✓ Kategori "{formData.category}" dipilih
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Description */}
-          <div className="fade-in" style={{ animationDelay: '500ms' }}>
+          <div className="fade-in" style={{ animationDelay: '600ms' }}>
             <label htmlFor="description" className="block text-lg font-bold text-slate-700 mb-4">
               Deskripsi
             </label>
@@ -254,7 +294,7 @@ const TransactionForm: React.FC = () => {
           </div>
 
           {/* Date */}
-          <div className="fade-in" style={{ animationDelay: '600ms' }}>
+          <div className="fade-in" style={{ animationDelay: '700ms' }}>
             <label htmlFor="date" className="block text-lg font-bold text-slate-700 mb-4">
               Tanggal
             </label>
@@ -274,7 +314,7 @@ const TransactionForm: React.FC = () => {
           </div>
 
           {/* Submit Button */}
-          <div className="fade-in" style={{ animationDelay: '700ms' }}>
+          <div className="fade-in" style={{ animationDelay: '800ms' }}>
             <button
               type="submit"
               disabled={isSubmitting}
