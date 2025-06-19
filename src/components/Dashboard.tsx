@@ -2,6 +2,7 @@ import React from 'react';
 import { TrendingUp, TrendingDown, CreditCard, ArrowRight, BarChart3, Sparkles, Wallet } from 'lucide-react';
 import { formatCurrency, getDateRange } from '../utils/dateUtils';
 import { useBudget } from '../hooks/useBudget';
+import { getIconComponent } from '../utils/iconUtils';
 
 interface DashboardProps {
   onNavigate?: (tab: string) => void;
@@ -170,33 +171,36 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {accounts.slice(0, 6).map((account, index) => (
-              <div 
-                key={account.id} 
-                className="flex items-center justify-between p-4 hover:bg-white/40 rounded-2xl transition-all duration-200 border border-transparent hover:border-white/40"
-                style={{ animationDelay: `${500 + index * 50}ms` }}
-              >
-                <div className="flex items-center space-x-3">
-                  <div 
-                    className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
-                    style={{ backgroundColor: account.color }}
-                  >
-                    <Wallet className="w-5 h-5 text-white" />
+            {accounts.slice(0, 6).map((account, index) => {
+              const AccountIcon = getIconComponent(account.icon);
+              return (
+                <div 
+                  key={account.id} 
+                  className="flex items-center justify-between p-4 hover:bg-white/40 rounded-2xl transition-all duration-200 border border-transparent hover:border-white/40"
+                  style={{ animationDelay: `${500 + index * 50}ms` }}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div 
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
+                      style={{ backgroundColor: account.color }}
+                    >
+                      <AccountIcon className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-slate-800 truncate">{account.name}</p>
+                      <p className="text-sm text-slate-500 capitalize">{account.type.replace('_', ' ')}</p>
+                    </div>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-slate-800 truncate">{account.name}</p>
-                    <p className="text-sm text-slate-500 capitalize">{account.type.replace('_', ' ')}</p>
+                  <div className="text-right">
+                    <span className={`font-bold text-lg ${
+                      account.balance >= 0 ? 'text-emerald-600' : 'text-red-600'
+                    }`}>
+                      {formatCurrency(account.balance)}
+                    </span>
                   </div>
                 </div>
-                <div className="text-right">
-                  <span className={`font-bold text-lg ${
-                    account.balance >= 0 ? 'text-emerald-600' : 'text-red-600'
-                  }`}>
-                    {formatCurrency(account.balance)}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -230,39 +234,43 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             </div>
           ) : (
             <div className="space-y-4">
-              {monthData.transactions.slice(0, 5).map((transaction, index) => (
-                <div 
-                  key={transaction.id} 
-                  className="flex items-center justify-between p-4 hover:bg-white/40 rounded-2xl transition-all duration-200 border border-transparent hover:border-white/40"
-                  style={{ animationDelay: `${600 + index * 50}ms` }}
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm ${
-                      transaction.type === 'income' 
-                        ? 'bg-gradient-to-br from-emerald-400 to-emerald-500' 
-                        : transaction.type === 'transfer'
-                        ? 'bg-gradient-to-br from-purple-400 to-purple-500'
-                        : 'bg-gradient-to-br from-red-400 to-red-500'
-                    }`}>
-                      <span className="text-white font-bold text-lg">
-                        {transaction.type === 'income' ? '+' : transaction.type === 'transfer' ? '⇄' : '-'}
+              {monthData.transactions.slice(0, 5).map((transaction, index) => {
+                const TransactionIcon = transaction.icon ? getIconComponent(transaction.icon) : 
+                  (transaction.type === 'income' ? TrendingUp : 
+                   transaction.type === 'transfer' ? ArrowRight : TrendingDown);
+                
+                return (
+                  <div 
+                    key={transaction.id} 
+                    className="flex items-center justify-between p-4 hover:bg-white/40 rounded-2xl transition-all duration-200 border border-transparent hover:border-white/40"
+                    style={{ animationDelay: `${600 + index * 50}ms` }}
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm ${
+                        transaction.type === 'income' 
+                          ? 'bg-gradient-to-br from-emerald-400 to-emerald-500' 
+                          : transaction.type === 'transfer'
+                          ? 'bg-gradient-to-br from-purple-400 to-purple-500'
+                          : 'bg-gradient-to-br from-red-400 to-red-500'
+                      }`}>
+                        <TransactionIcon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-slate-800 truncate text-lg">{transaction.description}</p>
+                        <p className="text-slate-500 font-medium">{transaction.category}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className={`font-bold text-xl ${
+                        transaction.type === 'income' ? 'text-emerald-600' : 
+                        transaction.type === 'transfer' ? 'text-purple-600' : 'text-red-600'
+                      }`}>
+                        {transaction.type === 'income' ? '+' : transaction.type === 'transfer' ? '' : '-'}{formatCurrency(transaction.amount)}
                       </span>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-slate-800 truncate text-lg">{transaction.description}</p>
-                      <p className="text-slate-500 font-medium">{transaction.category}</p>
-                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className={`font-bold text-xl ${
-                      transaction.type === 'income' ? 'text-emerald-600' : 
-                      transaction.type === 'transfer' ? 'text-purple-600' : 'text-red-600'
-                    }`}>
-                      {transaction.type === 'income' ? '+' : transaction.type === 'transfer' ? '' : '-'}{formatCurrency(transaction.amount)}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { isDateInRange } from '../utils/dateUtils';
+import { getCategoryIconSuggestion } from '../utils/iconUtils';
 
 export const useBudget = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -150,6 +151,7 @@ export const useBudget = () => {
     createdAt: dbTransaction.created_at,
     accountId: dbTransaction.account_id,
     transferToAccountId: dbTransaction.transfer_to_account_id,
+    icon: dbTransaction.icon,
   });
 
   const addAccount = async (account: Omit<Account, 'id' | 'createdAt' | 'balance'>) => {
@@ -268,6 +270,7 @@ export const useBudget = () => {
             date: transaction.date,
             account_id: transaction.accountId,
             transfer_to_account_id: transaction.transferToAccountId,
+            icon: transaction.icon,
           }
         ])
         .select()
@@ -379,13 +382,16 @@ export const useBudget = () => {
     if (!user) return;
 
     try {
+      // Auto-suggest icon based on category name
+      const suggestedIcon = category.icon || getCategoryIconSuggestion(category.name);
+      
       const { data, error } = await supabase
         .from('categories')
         .insert([
           {
             user_id: user.id,
             name: category.name,
-            icon: category.icon,
+            icon: suggestedIcon,
             color: category.color,
             type: isIncome ? 'income' : 'expense',
             is_custom: true,
