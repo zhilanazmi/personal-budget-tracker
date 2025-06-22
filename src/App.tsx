@@ -11,7 +11,9 @@ import TransferForm from './components/TransferForm';
 import TransactionList from './components/TransactionList';
 import Reports from './components/Reports';
 import Analytics from './components/Analytics';
+import Help from './components/Help';
 import Settings from './components/Settings';
+import FloatingHelpButton from './components/FloatingHelpButton';
 import Toast from './components/Toast';
 import Auth from './components/Auth';
 
@@ -55,11 +57,12 @@ function AppContent() {
     const contentMap = {
       dashboard: <Dashboard onNavigate={setActiveTab} />,
       accounts: <AccountManager />,
-      add: <TransactionForm />,
+      add: <TransactionForm onNavigate={setActiveTab} />,
       transfer: <TransferForm />,
       transactions: <TransactionList />,
       reports: <Reports />,
       analytics: <Analytics />,
+      help: <Help />,
       settings: <Settings />,
     };
     
@@ -143,6 +146,9 @@ function AppContent() {
           </main>
         </div>
       </div>
+
+      {/* Floating Help Button - Only show when not on help page */}
+      {activeTab !== 'help' && <FloatingHelpButton onNavigate={setActiveTab} />}
 
       {/* Global Footer */}
       <footer className="glass-effect border-t border-white/20 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 mt-auto">

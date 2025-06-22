@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, CreditCard, ArrowRight, BarChart3, Sparkles, Wallet } from 'lucide-react';
+import { TrendingUp, TrendingDown, CreditCard, ArrowRight, BarChart3, Sparkles, Wallet, HelpCircle } from 'lucide-react';
 import { formatCurrency, getDateRange } from '../utils/dateUtils';
 import { useBudget } from '../hooks/useBudget';
 
@@ -8,7 +8,7 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
-  const { getReportData, accounts, loading } = useBudget();
+  const { getReportData, accounts, loading, transactions } = useBudget();
   
   if (loading) {
     return (
@@ -29,6 +29,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const monthData = getReportData(getDateRange('month'));
 
   const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
+  const isNewUser = accounts.length === 0 && transactions.length === 0;
 
   const StatCard = ({ 
     title, 
@@ -96,16 +97,48 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
   return (
     <div className="space-y-8">
+      {/* Welcome Message for New Users */}
+      {isNewUser && (
+        <div className="glass-effect rounded-3xl p-6 border border-cyan-200 bg-gradient-to-r from-cyan-50 to-blue-50 fade-in">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl">
+                <HelpCircle className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-800">Selamat datang di BudgetTracker! 👋</h3>
+                <p className="text-slate-600">Mulai perjalanan keuangan Anda. Butuh bantuan?</p>
+              </div>
+            </div>
+            <button
+              onClick={() => onNavigate?.('help')}
+              className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-200 font-semibold"
+            >
+              Lihat Panduan
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="text-center sm:text-left fade-in">
-        <div className="flex items-center space-x-3 justify-center sm:justify-start mb-4">
-          <div className="p-3 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-2xl shadow-lg">
-            <Sparkles className="w-8 h-8 text-white" />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3 justify-center sm:justify-start">
+            <div className="p-3 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-2xl shadow-lg">
+              <Sparkles className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Dashboard</h2>
+              <p className="text-slate-600 text-lg sm:text-base font-medium">Ringkasan keuangan Anda</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Dashboard</h2>
-            <p className="text-slate-600 text-lg sm:text-base font-medium">Ringkasan keuangan Anda</p>
-          </div>
+          <button
+            onClick={() => onNavigate?.('help')}
+            className="p-3 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 group"
+            title="Buka Panduan Pengguna"
+          >
+            <HelpCircle className="w-6 h-6 text-white group-hover:scale-110 transition-transform duration-200" />
+          </button>
         </div>
       </div>
 

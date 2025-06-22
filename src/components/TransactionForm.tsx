@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { Plus, Minus, Calendar, Tag, FileText, Wallet, DollarSign } from 'lucide-react';
+import { Plus, Minus, Calendar, Tag, FileText, Wallet, DollarSign, HelpCircle } from 'lucide-react';
 import { useBudget } from '../hooks/useBudget';
 import { useToast } from '../contexts/ToastContext';
 import { Transaction } from '../types';
 import { formatCurrency, formatNumberWithDots, parseFormattedNumber, getTodayDateString } from '../utils/dateUtils';
 
-const TransactionForm: React.FC = () => {
+interface TransactionFormProps {
+  onNavigate?: (tab: string) => void;
+}
+
+const TransactionForm: React.FC<TransactionFormProps> = ({ onNavigate }) => {
   const { addTransaction, categories, incomeCategories, accounts } = useBudget();
   const { showToast } = useToast();
   const [formData, setFormData] = useState({
@@ -92,14 +96,26 @@ const TransactionForm: React.FC = () => {
     <div className="max-w-2xl mx-auto">
       <div className="glass-effect rounded-3xl p-8 sm:p-10 border border-white/20 slide-in">
         <div className="mb-10 text-center sm:text-left">
-          <div className="flex items-center space-x-4 justify-center sm:justify-start mb-6">
-            <div className="p-4 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-2xl shadow-lg">
-              <Plus className="w-8 h-8 text-white" />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4 justify-center sm:justify-start">
+              <div className="p-4 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-2xl shadow-lg">
+                <Plus className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Tambah Transaksi</h2>
+                <p className="text-slate-600 text-lg sm:text-base font-medium">Catat pemasukan atau pengeluaran Anda</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Tambah Transaksi</h2>
-              <p className="text-slate-600 text-lg sm:text-base font-medium">Catat pemasukan atau pengeluaran Anda</p>
-            </div>
+            {onNavigate && (
+              <button
+                type="button"
+                onClick={() => onNavigate('help')}
+                className="p-3 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 group"
+                title="Buka Panduan Cara Tambah Transaksi"
+              >
+                <HelpCircle className="w-6 h-6 text-white group-hover:scale-110 transition-transform duration-200" />
+              </button>
+            )}
           </div>
         </div>
 
