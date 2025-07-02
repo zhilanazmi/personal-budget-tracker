@@ -1,18 +1,34 @@
 import React, { useState } from 'react';
-import { Calendar, TrendingUp, PieChart, ChevronDown, BarChart3 } from 'lucide-react';
+import { Calendar, TrendingUp, PieChart, ChevronDown, BarChart3, X, Eye, MapPin, CreditCard, Clock } from 'lucide-react';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { useBudget } from '../hooks/useBudget';
 import { formatCurrency, getDateRange, formatDate } from '../utils/dateUtils';
 import { DateRange } from '../types';
 
 const Reports: React.FC = () => {
-  const { getReportData, categories, loading } = useBudget();
+  const { getReportData, categories, loading, accounts } = useBudget();
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month' | 'year' | 'custom'>('month');
   const [customRange, setCustomRange] = useState<DateRange>({
     from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     to: new Date().toISOString().split('T')[0],
   });
   const [showCustomRange, setShowCustomRange] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showCategoryDetail, setShowCategoryDetail] = useState(false);
+
+  // Handle ESC key to close modal
+  React.useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showCategoryDetail) {
+        setShowCategoryDetail(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [showCategoryDetail]);
 
   if (loading) {
     return (
@@ -40,6 +56,26 @@ const Reports: React.FC = () => {
 
   const reportData = getReportData(getDateRangeForPeriod());
 
+  // Get transactions for selected category
+  const getCategoryTransactions = (categoryName: string) => {
+    return reportData.transactions.filter(t => 
+      t.type === 'expense' && t.category === categoryName
+    );
+  };
+
+  // Get account name by ID
+  const getAccountName = (accountId?: string) => {
+    if (!accountId) return 'Akun Tidak Diketahui';
+    const account = accounts.find(acc => acc.id === accountId);
+    return account ? account.name : 'Akun Tidak Diketahui';
+  };
+
+  // Handle category click
+  const handleCategoryClick = (categoryName: string) => {
+    setSelectedCategory(categoryName);
+    setShowCategoryDetail(true);
+  };
+
   // Prepare data for charts
   const pieChartData = Object.entries(reportData.categoryBreakdown)
     .map(([category, amount]) => ({
@@ -66,10 +102,18 @@ const Reports: React.FC = () => {
               {((payload[0].value / reportData.totalExpenses) * 100).toFixed(1)}% dari total
             </p>
           )}
+          <p className="text-slate-400 text-xs mt-2">👆 Klik untuk melihat detail</p>
         </div>
       );
     }
     return null;
+  };
+
+  // Handle chart click
+  const handleChartClick = (data: any) => {
+    if (data && data.name) {
+      handleCategoryClick(data.name);
+    }
   };
 
   const CategoryChart = () => {
@@ -95,6 +139,8 @@ const Reports: React.FC = () => {
                     outerRadius={100}
                     fill="#8884d8"
                     dataKey="value"
+                    onClick={handleChartClick}
+                    style={{ cursor: 'pointer' }}
                   >
                     {pieChartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -125,7 +171,12 @@ const Reports: React.FC = () => {
                     tickFormatter={(value) => formatCurrency(value).replace('Rp', 'Rp ')}
                   />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                  <Bar 
+                    dataKey="value" 
+                    radius={[4, 4, 0, 0]}
+                    onClick={handleChartClick}
+                    style={{ cursor: 'pointer' }}
+                  >
                     {barChartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
@@ -142,8 +193,9 @@ const Reports: React.FC = () => {
           {pieChartData.map(({ name, value, color }, index) => (
             <div 
               key={name} 
-              className="space-y-4 fade-in"
+              className="space-y-4 fade-in cursor-pointer hover:bg-white/30 rounded-2xl p-4 transition-all duration-300 group"
               style={{ animationDelay: `${index * 100}ms` }}
+              onClick={() => handleCategoryClick(name)}
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-4">
@@ -151,7 +203,8 @@ const Reports: React.FC = () => {
                     className="w-6 h-6 rounded-full shadow-sm"
                     style={{ backgroundColor: color }}
                   />
-                  <span className="text-lg font-bold text-slate-700">{name}</span>
+                  <span className="text-lg font-bold text-slate-700 group-hover:text-slate-800">{name}</span>
+                  <Eye className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <div className="text-right">
                   <span className="text-2xl font-bold text-slate-800">
@@ -350,6 +403,115 @@ const Reports: React.FC = () => {
           <CategoryChart />
         )}
       </div>
+
+      {/* Category Detail Modal */}
+      {showCategoryDetail && selectedCategory && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setShowCategoryDetail(false)}
+        >
+          <div 
+            className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-200">
+              <div className="flex items-center space-x-4">
+                <div 
+                  className="w-8 h-8 rounded-full shadow-sm"
+                  style={{ 
+                    backgroundColor: pieChartData.find(item => item.name === selectedCategory)?.color || '#6B7280'
+                  }}
+                />
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-800">{selectedCategory}</h3>
+                  <p className="text-slate-600">
+                    {getCategoryTransactions(selectedCategory).length} transaksi • {formatCurrency(
+                      getCategoryTransactions(selectedCategory).reduce((sum, t) => sum + t.amount, 0)
+                    )}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowCategoryDetail(false)}
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors focus-ring"
+              >
+                <X className="w-6 h-6 text-slate-600" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 overflow-y-auto max-h-[70vh]">
+              <div className="space-y-4">
+                {getCategoryTransactions(selectedCategory).length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <PieChart className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <p className="text-slate-500 text-lg">Tidak ada transaksi ditemukan</p>
+                  </div>
+                ) : (
+                  getCategoryTransactions(selectedCategory)
+                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                    .map((transaction, index) => (
+                      <div 
+                        key={transaction.id}
+                        className="glass-effect rounded-2xl p-6 border border-white/20 hover:bg-white/60 transition-all duration-300"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                          <div className="flex-1">
+                            <div className="flex items-start space-x-4">
+                              <div className="flex-shrink-0">
+                                <div className="p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl shadow-lg">
+                                  <TrendingUp className="w-5 h-5 text-white transform rotate-180" />
+                                </div>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="text-lg font-bold text-slate-800 truncate">
+                                  {transaction.description || 'Tidak ada deskripsi'}
+                                </h4>
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0 mt-2">
+                                  <div className="flex items-center space-x-2 text-slate-600">
+                                    <Clock className="w-4 h-4" />
+                                    <span className="font-medium">
+                                      {formatDate(transaction.date)}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center space-x-2 text-slate-600">
+                                    <CreditCard className="w-4 h-4" />
+                                    <span className="font-medium">
+                                      {getAccountName(transaction.accountId)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex-shrink-0 text-right">
+                            <span className="text-2xl font-bold text-red-600">
+                              -{formatCurrency(transaction.amount)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end p-6 border-t border-slate-200">
+              <button
+                onClick={() => setShowCategoryDetail(false)}
+                className="px-6 py-3 bg-gradient-to-r from-slate-500 to-slate-600 text-white font-bold rounded-2xl hover:from-slate-600 hover:to-slate-700 transition-all duration-300 focus-ring"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
