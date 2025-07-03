@@ -1,11 +1,186 @@
 import React, { useState } from 'react';
-import { Book, ChevronDown, ChevronRight, User, CreditCard, Plus, ArrowRightLeft, Receipt, BarChart3, Brain, Settings, Search, X, Download } from 'lucide-react';
+import { Book, ChevronDown, ChevronRight, User, CreditCard, Plus, ArrowRightLeft, Receipt, BarChart3, Brain, Settings, Search, X, Download, Key } from 'lucide-react';
 
 const Help: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const sections = [
+    {
+      id: 'user-flow',
+      title: 'Alur Penggunaan Aplikasi',
+      icon: User,
+      content: (
+        <div className="space-y-6">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-200">
+            <h4 className="text-lg font-bold text-slate-800 mb-4 flex items-center space-x-2">
+              <span>🚀</span>
+              <span>Langkah Demi Langkah Setelah Login</span>
+            </h4>
+            <div className="space-y-4">
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                <div>
+                  <h5 className="font-bold text-slate-800">Setelah Login Berhasil</h5>
+                  <p className="text-slate-700">Anda akan langsung diarahkan ke halaman <strong>Dashboard</strong> yang menampilkan ringkasan keuangan Anda.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                <div>
+                  <h5 className="font-bold text-slate-800">Setup Akun Keuangan Pertama</h5>
+                  <p className="text-slate-700 mb-2">Jika ini pertama kali login, sistem akan membuat 3 akun default untuk Anda:</p>
+                  <ul className="text-slate-600 text-sm space-y-1 ml-4">
+                    <li>• <strong>Tunai</strong> - untuk uang kas/tunai</li>
+                    <li>• <strong>Bank Utama</strong> - untuk rekening bank</li>
+                    <li>• <strong>Dompet Digital</strong> - untuk e-wallet (GoPay, OVO, dll)</li>
+                  </ul>
+                  <p className="text-slate-700 mt-2">Anda bisa mengubah nama, warna, dan menambah akun lain di menu <strong>"Kelola Akun"</strong>.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                <div>
+                  <h5 className="font-bold text-slate-800">Mulai Mencatat Transaksi</h5>
+                  <p className="text-slate-700 mb-2">Sekarang Anda siap mencatat transaksi keuangan harian:</p>
+                  <ul className="text-slate-600 text-sm space-y-1 ml-4">
+                    <li>• Klik menu <strong>"Tambah Transaksi"</strong> di sidebar</li>
+                    <li>• Pilih jenis: <span className="text-green-600 font-semibold">Pemasukan</span> atau <span className="text-red-600 font-semibold">Pengeluaran</span></li>
+                    <li>• Isi detail transaksi (akun, jumlah, kategori, deskripsi)</li>
+                    <li>• Klik submit untuk menyimpan</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold">4</div>
+                <div>
+                  <h5 className="font-bold text-slate-800">Transfer Antar Akun (Opsional)</h5>
+                  <p className="text-slate-700 mb-2">Jika Anda perlu memindahkan uang antar akun:</p>
+                  <ul className="text-slate-600 text-sm space-y-1 ml-4">
+                    <li>• Klik menu <strong>"Transfer Dana"</strong></li>
+                    <li>• Pilih akun sumber dan tujuan</li>
+                    <li>• Masukkan jumlah dan deskripsi</li>
+                    <li>• Sistem otomatis update saldo kedua akun</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-8 h-8 bg-cyan-500 text-white rounded-full flex items-center justify-center font-bold">5</div>
+                <div>
+                  <h5 className="font-bold text-slate-800">Monitor & Analisis</h5>
+                  <p className="text-slate-700 mb-2">Setelah ada beberapa transaksi, manfaatkan fitur monitoring:</p>
+                  <ul className="text-slate-600 text-sm space-y-1 ml-4">
+                    <li>• <strong>Dashboard:</strong> Ringkasan harian/bulanan dan transaksi terbaru</li>
+                    <li>• <strong>Riwayat Transaksi:</strong> Cari dan filter transaksi</li>
+                    <li>• <strong>Laporan Keuangan:</strong> Grafik dan analisis dengan periode</li>
+                    <li>• <strong>Analitik Cerdas:</strong> Prediksi AI dan deteksi anomali</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold">6</div>
+                <div>
+                  <h5 className="font-bold text-slate-800">Kustomisasi (Opsional)</h5>
+                  <p className="text-slate-700 mb-2">Sesuaikan aplikasi dengan kebutuhan Anda:</p>
+                  <ul className="text-slate-600 text-sm space-y-1 ml-4">
+                    <li>• <strong>Kelola Akun:</strong> Tambah akun baru (kartu kredit, investasi, dll)</li>
+                    <li>• <strong>Pengaturan:</strong> Buat kategori kustom sesuai kebutuhan</li>
+                    <li>• <strong>Warna & Ikon:</strong> Personalisasi tampilan akun dan kategori</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 p-6 rounded-2xl border border-emerald-200">
+            <h4 className="text-lg font-bold text-emerald-800 mb-3 flex items-center space-x-2">
+              <span>💡</span>
+              <span>Tips untuk Pengguna Baru</span>
+            </h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <h5 className="font-semibold text-emerald-700 mb-2">🎯 Minggu Pertama:</h5>
+                <ul className="text-emerald-600 text-sm space-y-1">
+                  <li>• Catat semua transaksi harian secara konsisten</li>
+                  <li>• Jangan lupa catat transaksi kecil (parkir, snack, dll)</li>
+                  <li>• Gunakan deskripsi yang jelas dan spesifik</li>
+                  <li>• Cek dashboard setiap hari untuk membiasakan diri</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-semibold text-emerald-700 mb-2">📈 Setelah 2 Minggu:</h5>
+                <ul className="text-emerald-600 text-sm space-y-1">
+                  <li>• Mulai analisis pola pengeluaran di Laporan</li>
+                  <li>• Identifikasi kategori dengan pengeluaran terbesar</li>
+                  <li>• Gunakan fitur Analitik untuk trend dan prediksi</li>
+                  <li>• Evaluasi apakah perlu kategori kustom tambahan</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-6 rounded-2xl border border-amber-200">
+            <h4 className="text-lg font-bold text-amber-800 mb-3 flex items-center space-x-2">
+              <span>🔄</span>
+              <span>Rutinitas Harian yang Disarankan</span>
+            </h4>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <span className="text-2xl">🌅</span>
+                <div>
+                  <h5 className="font-semibold text-amber-700">Pagi Hari</h5>
+                  <p className="text-amber-600 text-sm">Buka aplikasi, cek saldo akun, rencanakan pengeluaran hari ini</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="text-2xl">☀️</span>
+                <div>
+                  <h5 className="font-semibold text-amber-700">Sepanjang Hari</h5>
+                  <p className="text-amber-600 text-sm">Catat transaksi sesegera mungkin setelah terjadi (jangan menunda)</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="text-2xl">🌙</span>
+                <div>
+                  <h5 className="font-semibold text-amber-700">Malam Hari</h5>
+                  <p className="text-amber-600 text-sm">Review transaksi hari ini, pastikan tidak ada yang terlewat</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-red-50 to-pink-50 p-6 rounded-2xl border border-red-200">
+            <h4 className="text-lg font-bold text-red-800 mb-3 flex items-center space-x-2">
+              <span>❓</span>
+              <span>Troubleshooting Umum</span>
+            </h4>
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-semibold text-red-700">❌ Saldo akun tidak sesuai?</h5>
+                <p className="text-red-600 text-sm">Periksa riwayat transaksi, pastikan semua transaksi tercatat dengan benar dan tidak ada duplikasi.</p>
+              </div>
+              <div>
+                <h5 className="font-semibold text-red-700">❌ Tidak bisa transfer dana?</h5>
+                <p className="text-red-600 text-sm">Pastikan akun sumber memiliki saldo yang cukup dan akun sumber berbeda dari akun tujuan.</p>
+              </div>
+              <div>
+                <h5 className="font-semibold text-red-700">❌ Kategori tidak muncul?</h5>
+                <p className="text-red-600 text-sm">Kategori pengeluaran hanya muncul untuk transaksi pengeluaran, begitu juga sebaliknya.</p>
+              </div>
+              <div>
+                <h5 className="font-semibold text-red-700">❌ Data hilang atau error?</h5>
+                <p className="text-red-600 text-sm">Data tersimpan aman di cloud. Coba refresh halaman atau logout-login kembali.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
     {
       id: 'getting-started',
       title: 'Memulai Aplikasi',
@@ -56,7 +231,7 @@ const Help: React.FC = () => {
     {
       id: 'authentication',
       title: 'Login & Registrasi',
-      icon: User,
+      icon: Key,
       content: (
         <div className="space-y-6">
           <div>
