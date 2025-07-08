@@ -7,20 +7,45 @@ import { formatCurrency, formatNumberWithDots, parseFormattedNumber, getTodayDat
 
 interface TransactionFormProps {
   onNavigate?: (tab: string) => void;
+  initialTemplate?: {
+    type: 'income' | 'expense';
+    amount?: number;
+    category: string;
+    description: string;
+    accountId?: string;
+  };
 }
 
-const TransactionForm: React.FC<TransactionFormProps> = ({ onNavigate }) => {
+const TransactionForm: React.FC<TransactionFormProps> = ({ onNavigate, initialTemplate }) => {
   const { addTransaction, categories, incomeCategories, accounts } = useBudget();
   const { showToast } = useToast();
-  const [formData, setFormData] = useState({
-    type: 'expense' as 'income' | 'expense',
-    amount: '',
-    category: '',
-    description: '',
-    date: new Date().toISOString().split('T')[0],
-    accountId: '',
-  });
-  const [displayAmount, setDisplayAmount] = useState('');
+  
+  // Initialize form data with template if provided
+  const getInitialFormData = () => {
+    if (initialTemplate) {
+      return {
+        type: initialTemplate.type,
+        amount: initialTemplate.amount ? initialTemplate.amount.toString() : '',
+        category: initialTemplate.category,
+        description: initialTemplate.description,
+        date: new Date().toISOString().split('T')[0],
+        accountId: initialTemplate.accountId || '',
+      };
+    }
+    return {
+      type: 'expense' as 'income' | 'expense',
+      amount: '',
+      category: '',
+      description: '',
+      date: new Date().toISOString().split('T')[0],
+      accountId: '',
+    };
+  };
+
+  const [formData, setFormData] = useState(getInitialFormData());
+  const [displayAmount, setDisplayAmount] = useState(
+    initialTemplate?.amount ? formatNumberWithDots(initialTemplate.amount.toString()) : ''
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {

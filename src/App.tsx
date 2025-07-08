@@ -4,6 +4,7 @@ import { useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { QuickActionProvider } from './contexts/QuickActionContext';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import AccountManager from './components/AccountManager';
@@ -15,18 +16,55 @@ import Analytics from './components/Analytics';
 import Help from './components/Help';
 import Settings from './components/Settings';
 import FloatingHelpButton from './components/FloatingHelpButton';
+import { QuickActionButton } from './components/QuickActionButton';
 import Toast from './components/Toast';
 import Auth from './components/Auth';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [transactionTemplate, setTransactionTemplate] = useState<{
+    type: 'income' | 'expense';
+    amount?: number;
+    category: string;
+    description: string;
+    accountId?: string;
+  } | null>(null);
   const { user, loading, signOut } = useAuth();
 
   // Close sidebar when tab changes on mobile
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setSidebarOpen(false);
+  };
+
+  // Handle opening transaction form with template
+  const handleTransactionFormOpen = (type?: 'income' | 'expense', template?: {
+    type: 'income' | 'expense';
+    amount?: number;
+    category: string;
+    description: string;
+    accountId?: string;
+  }) => {
+    if (template) {
+      setTransactionTemplate(template);
+    } else {
+      setTransactionTemplate(null);
+    }
+    setActiveTab('add');
+  };
+
+  // Handle opening transfer form
+  const handleTransferFormOpen = () => {
+    setActiveTab('transfer');
+  };
+
+  // Clear template when leaving add form
+  const handleTabChangeWithCleanup = (tab: string) => {
+    if (tab !== 'add') {
+      setTransactionTemplate(null);
+    }
+    handleTabChange(tab);
   };
 
   // Close sidebar on escape key
@@ -56,9 +94,9 @@ function AppContent() {
 
   const renderContent = () => {
     const contentMap = {
-      dashboard: <Dashboard onNavigate={setActiveTab} />,
+      dashboard: <Dashboard onNavigate={handleTabChangeWithCleanup} onTransactionFormOpen={handleTransactionFormOpen} />,
       accounts: <AccountManager />,
-      add: <TransactionForm onNavigate={setActiveTab} />,
+      add: <TransactionForm onNavigate={handleTabChangeWithCleanup} initialTemplate={transactionTemplate || undefined} />,
       transfer: <TransferForm />,
       transactions: <TransactionList />,
       reports: <Reports />,
@@ -67,7 +105,7 @@ function AppContent() {
       settings: <Settings />,
     };
     
-    return contentMap[activeTab as keyof typeof contentMap] || <Dashboard onNavigate={setActiveTab} />;
+    return contentMap[activeTab as keyof typeof contentMap] || <Dashboard onNavigate={handleTabChangeWithCleanup} onTransactionFormOpen={handleTransactionFormOpen} />;
   };
 
   // Show loading screen
@@ -150,6 +188,12 @@ function AppContent() {
 
       {/* Floating Help Button - Only show when not on help page */}
       {activeTab !== 'help' && <FloatingHelpButton onNavigate={setActiveTab} />}
+      
+      {/* Quick Action Floating Button */}
+      <QuickActionButton 
+        onTransactionFormOpen={handleTransactionFormOpen}
+        onTransferFormOpen={handleTransferFormOpen}
+      />
 
       {/* Global Footer */}
       <footer className="glass-effect dark:glass-effect-dark border-t border-white/20 dark:border-slate-700/50 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 mt-auto">
@@ -171,7 +215,9 @@ function App() {
     <ThemeProvider>
       <ToastProvider>
         <AuthProvider>
-          <AppContent />
+          <QuickActionProvider>
+            <AppContent />
+          </QuickActionProvider>
         </AuthProvider>
       </ToastProvider>
     </ThemeProvider>

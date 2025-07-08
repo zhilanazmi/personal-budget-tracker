@@ -2,12 +2,20 @@ import React from 'react';
 import { TrendingUp, TrendingDown, CreditCard, ArrowRight, BarChart3, Sparkles, Wallet, HelpCircle } from 'lucide-react';
 import { formatCurrency, getDateRange } from '../utils/dateUtils';
 import { useBudget } from '../hooks/useBudget';
+import { QuickAddButtons } from './QuickAddButtons';
 
 interface DashboardProps {
   onNavigate?: (tab: string) => void;
+  onTransactionFormOpen?: (type?: 'income' | 'expense', template?: {
+    type: 'income' | 'expense';
+    amount?: number;
+    category: string;
+    description: string;
+    accountId?: string;
+  }) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onNavigate, onTransactionFormOpen }) => {
   const { getReportData, accounts, loading, transactions } = useBudget();
   
   if (loading) {
@@ -25,8 +33,50 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     );
   }
   
+  // Function to calculate percentage change
+  const calculatePercentageChange = (current: number, previous: number): string => {
+    if (previous === 0) {
+      if (current === 0) return '0%';
+      return current > 0 ? 'Baru' : '0%';
+    }
+    const change = ((current - previous) / previous) * 100;
+    const sign = change >= 0 ? '+' : '';
+    
+    // Handle very large changes
+    if (Math.abs(change) > 999) {
+      return change > 0 ? '+999%' : '-999%';
+    }
+    
+    return `${sign}${change.toFixed(1)}%`;
+  };
+
+  // Get current month data
   const todayData = getReportData(getDateRange('today'));
   const monthData = getReportData(getDateRange('month'));
+
+  // Get previous month data for comparison
+  const now = new Date();
+  const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const previousMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+  
+  const previousMonthData = getReportData({
+    from: previousMonth.toISOString().split('T')[0],
+    to: previousMonthEnd.toISOString().split('T')[0]
+  });
+
+  // Calculate percentage changes
+  const incomeChange = calculatePercentageChange(monthData.totalIncome, previousMonthData.totalIncome);
+  const expenseChange = calculatePercentageChange(monthData.totalExpenses, previousMonthData.totalExpenses);
+
+  // Calculate daily expense trend (today vs average daily expense this month)
+  const daysInMonth = now.getDate(); // Current day of month
+  const averageDailyExpense = daysInMonth > 0 ? monthData.totalExpenses / daysInMonth : 0;
+  const todayExpenseChange = calculatePercentageChange(todayData.totalExpenses, averageDailyExpense);
+
+  // Calculate balance trend (current vs previous month net balance)
+  const currentNetBalance = monthData.totalIncome - monthData.totalExpenses;
+  const previousNetBalance = previousMonthData.totalIncome - previousMonthData.totalExpenses;
+  const balanceChange = calculatePercentageChange(currentNetBalance, previousNetBalance);
 
   const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
   const isNewUser = accounts.length === 0 && transactions.length === 0;
@@ -74,8 +124,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           </div>
           {trend && (
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 pulse-ring" />
-              <span className="text-sm font-semibold text-slate-600 bg-white/60 px-3 py-1.5 rounded-full border border-white/40">
+              <div className={`w-2 h-2 rounded-full pulse-ring ${
+                trend.startsWith('+') ? 'bg-emerald-400' : 
+                trend.startsWith('-') ? 'bg-red-400' : 
+                trend === 'Baru' ? 'bg-blue-400' : 'bg-slate-400'
+              }`} />
+              <span className={`text-sm font-semibold px-3 py-1.5 rounded-full border ${
+                trend.startsWith('+') ? 'text-emerald-700 bg-emerald-50 border-emerald-200' :
+                trend.startsWith('-') ? 'text-red-700 bg-red-50 border-red-200' :
+                trend === 'Baru' ? 'text-blue-700 bg-blue-50 border-blue-200' :
+                'text-slate-600 bg-white/60 border-white/40'
+              }`}>
                 {trend}
               </span>
             </div>
@@ -149,6 +208,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           amount={totalBalance}
           icon={Wallet}
           color={totalBalance >= 0 ? 'green' : 'red'}
+          trend={balanceChange}
           delay={0}
         />
         <StatCard
@@ -156,7 +216,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           amount={monthData.totalIncome}
           icon={TrendingUp}
           color="green"
-          trend="+2.1%"
+          trend={incomeChange}
           delay={100}
         />
         <StatCard
@@ -164,7 +224,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           amount={monthData.totalExpenses}
           icon={TrendingDown}
           color="red"
-          trend="-5.4%"
+          trend={expenseChange}
           delay={200}
         />
         <StatCard
@@ -172,9 +232,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           amount={todayData.totalExpenses}
           icon={CreditCard}
           color="purple"
+          trend={todayExpenseChange}
           delay={300}
         />
       </div>
+
+      {/* Quick Add Buttons */}
+      {onTransactionFormOpen && (
+        <div className="fade-in" style={{ animationDelay: '350ms' }}>
+          <QuickAddButtons onTransactionFormOpen={onTransactionFormOpen} />
+        </div>
+      )}
 
       {/* Accounts Overview */}
       <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '400ms' }}>
