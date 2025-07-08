@@ -15,7 +15,6 @@ import Reports from './components/Reports';
 import Analytics from './components/Analytics';
 import Help from './components/Help';
 import Settings from './components/Settings';
-import FloatingHelpButton from './components/FloatingHelpButton';
 import { QuickActionButton } from './components/QuickActionButton';
 import Toast from './components/Toast';
 import Auth from './components/Auth';
@@ -186,9 +185,6 @@ function AppContent() {
         </div>
       </div>
 
-      {/* Floating Help Button - Only show when not on help page */}
-      {activeTab !== 'help' && <FloatingHelpButton onNavigate={setActiveTab} />}
-      
       {/* Quick Action Floating Button */}
       <QuickActionButton 
         onTransactionFormOpen={handleTransactionFormOpen}

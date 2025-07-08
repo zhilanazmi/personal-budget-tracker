@@ -192,14 +192,23 @@ export const QuickActionButton: React.FC<QuickActionButtonProps> = ({
                 onClick={action.action}
                 className={`
                   ${action.color} text-white p-3 rounded-full shadow-lg 
-                  transform transition-all duration-200 hover:scale-110 active:scale-95
+                  transform transition-all duration-200 hover:scale-110 active:scale-95 group relative
                   flex items-center gap-2 whitespace-nowrap
                   ${action.id === 'quick-add' && showQuickAdd ? 'bg-purple-600' : ''}
                 `}
                 title={action.label}
               >
-                <action.icon className="w-5 h-5" />
-                <span className="text-sm font-medium pr-1">{action.label}</span>
+                <action.icon className="w-5 h-5 relative z-10" />
+                <span className="text-sm font-medium pr-1 relative z-10">{action.label}</span>
+                
+                {/* Pulse effect for each action button */}
+                <div className={`
+                  absolute inset-0 rounded-full opacity-60 animate-ping group-hover:animate-none
+                  ${action.id === 'expense' ? 'bg-red-400' : ''}
+                  ${action.id === 'income' ? 'bg-green-400' : ''}
+                  ${action.id === 'transfer' ? 'bg-blue-400' : ''}
+                  ${action.id === 'quick-add' ? 'bg-purple-400' : ''}
+                `}></div>
               </button>
             </div>
           ))}
@@ -211,12 +220,17 @@ export const QuickActionButton: React.FC<QuickActionButtonProps> = ({
         onClick={() => setIsExpanded(!isExpanded)}
         className={`
           w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-lg 
-          flex items-center justify-center transform transition-all duration-300 hover:scale-110 active:scale-95
+          flex items-center justify-center transform transition-all duration-300 hover:scale-110 active:scale-95 group relative
           ${isExpanded ? 'rotate-45' : 'rotate-0'}
         `}
         aria-label={isExpanded ? 'Tutup quick actions' : 'Buka quick actions'}
       >
         {isExpanded ? <X className="w-6 h-6" /> : <Plus className="w-6 h-6" />}
+        
+        {/* Pulse effect - only show when not expanded */}
+        {!isExpanded && (
+          <div className="absolute inset-0 rounded-full bg-blue-400 opacity-75 animate-ping group-hover:animate-none"></div>
+        )}
       </button>
 
       {/* Backdrop */}
@@ -230,22 +244,24 @@ export const QuickActionButton: React.FC<QuickActionButtonProps> = ({
         />
       )}
 
-      <style jsx>{`
-        @keyframes scale-in {
-          from {
-            opacity: 0;
-            transform: scale(0.8) translateY(10px);
+      <style>
+        {`
+          @keyframes scale-in {
+            from {
+              opacity: 0;
+              transform: scale(0.8) translateY(10px);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1) translateY(0);
+            }
           }
-          to {
-            opacity: 1;
-            transform: scale(1) translateY(0);
+          
+          .animate-scale-in {
+            animation: scale-in 0.2s ease-out;
           }
-        }
-        
-        .animate-scale-in {
-          animation: scale-in 0.2s ease-out;
-        }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 }; 
