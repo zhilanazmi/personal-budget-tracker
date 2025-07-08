@@ -50,7 +50,7 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4 transition-colors duration-300">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8 fade-in">
@@ -60,21 +60,21 @@ const Auth: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 dark:from-emerald-400 dark:to-blue-400 bg-clip-text text-transparent mb-2">
             BudgetTracker
           </h1>
-          <p className="text-slate-600 text-lg font-medium">
+          <p className="text-slate-600 dark:text-slate-300 text-lg font-medium">
             Kelola keuangan pribadi Anda dengan mudah
           </p>
         </div>
 
         {/* Auth Form */}
-        <div className="glass-effect rounded-3xl p-8 border border-white/20 shadow-2xl fade-in" style={{ animationDelay: '200ms' }}>
+        <div className="glass-effect dark:glass-effect-dark rounded-3xl p-8 border border-white/20 dark:border-slate-700/50 shadow-2xl fade-in" style={{ animationDelay: '200ms' }}>
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-2">
               {isSignUp ? 'Buat Akun Baru' : 'Masuk ke Akun'}
             </h2>
-            <p className="text-slate-600">
+            <p className="text-slate-600 dark:text-slate-300">
               {isSignUp 
                 ? 'Daftar untuk mulai mengelola keuangan Anda' 
                 : 'Masuk untuk melanjutkan ke dashboard Anda'
@@ -85,19 +85,19 @@ const Auth: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-bold text-slate-700 mb-3">
+              <label htmlFor="email" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
                 Email
               </label>
               <div className="relative">
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl">
-                  <Mail className="text-slate-600 w-5 h-5" />
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 dark:bg-slate-700 rounded-xl">
+                  <Mail className="text-slate-600 dark:text-slate-300 w-5 h-5" />
                 </div>
                 <input
                   type="email"
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-16 pr-4 py-4 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-medium bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
+                  className="w-full pl-16 pr-4 py-4 border-2 border-slate-200 dark:border-slate-600 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-medium bg-white/60 dark:bg-slate-800/60 dark:text-slate-200 backdrop-blur-sm input-focus transition-all duration-200"
                   placeholder="nama@email.com"
                   required
                 />
@@ -106,19 +106,19 @@ const Auth: React.FC = () => {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-bold text-slate-700 mb-3">
+              <label htmlFor="password" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
                 Password
               </label>
               <div className="relative">
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl">
-                  <Lock className="text-slate-600 w-5 h-5" />
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 dark:bg-slate-700 rounded-xl">
+                  <Lock className="text-slate-600 dark:text-slate-300 w-5 h-5" />
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-16 pr-16 py-4 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-medium bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
+                  className="w-full pl-16 pr-16 py-4 border-2 border-slate-200 dark:border-slate-600 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-medium bg-white/60 dark:bg-slate-800/60 dark:text-slate-200 backdrop-blur-sm input-focus transition-all duration-200"
                   placeholder="Masukkan password"
                   required
                   minLength={6}
@@ -126,7 +126,7 @@ const Auth: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 text-slate-500 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition-colors duration-200"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors duration-200"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -136,19 +136,19 @@ const Auth: React.FC = () => {
             {/* Confirm Password (Sign Up only) */}
             {isSignUp && (
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-bold text-slate-700 mb-3">
+                <label htmlFor="confirmPassword" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
                   Konfirmasi Password
                 </label>
                 <div className="relative">
-                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl">
-                    <Lock className="text-slate-600 w-5 h-5" />
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 dark:bg-slate-700 rounded-xl">
+                    <Lock className="text-slate-600 dark:text-slate-300 w-5 h-5" />
                   </div>
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
                     id="confirmPassword"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-16 pr-16 py-4 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-medium bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
+                    className="w-full pl-16 pr-16 py-4 border-2 border-slate-200 dark:border-slate-600 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-medium bg-white/60 dark:bg-slate-800/60 dark:text-slate-200 backdrop-blur-sm input-focus transition-all duration-200"
                     placeholder="Konfirmasi password"
                     required
                     minLength={6}
@@ -156,13 +156,13 @@ const Auth: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 text-slate-500 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition-colors duration-200"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors duration-200"
                   >
                     {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
                 {isSignUp && password && confirmPassword && password !== confirmPassword && (
-                  <p className="text-red-600 text-sm mt-2 font-medium">Password tidak cocok</p>
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-2 font-medium">Password tidak cocok</p>
                 )}
               </div>
             )}
@@ -189,12 +189,12 @@ const Auth: React.FC = () => {
 
           {/* Toggle Mode */}
           <div className="mt-8 text-center">
-            <p className="text-slate-600 mb-4">
+            <p className="text-slate-600 dark:text-slate-300 mb-4">
               {isSignUp ? 'Sudah punya akun?' : 'Belum punya akun?'}
             </p>
             <button
               onClick={toggleMode}
-              className="text-emerald-600 hover:text-emerald-700 font-bold text-lg hover:underline transition-colors duration-200"
+              className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-bold text-lg hover:underline transition-colors duration-200"
             >
               {isSignUp ? 'Masuk di sini' : 'Daftar di sini'}
             </button>
@@ -205,9 +205,9 @@ const Auth: React.FC = () => {
         <div className="text-center mt-8 fade-in" style={{ animationDelay: '400ms' }}>
           <div className="flex items-center justify-center space-x-2 mb-2">
             <div className="w-2 h-2 rounded-full bg-emerald-400 pulse-ring" />
-            <span className="text-sm font-semibold text-slate-600">Aman & Terpercaya</span>
+            <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">Aman & Terpercaya</span>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Data Anda dilindungi dengan enkripsi tingkat enterprise
           </p>
         </div>

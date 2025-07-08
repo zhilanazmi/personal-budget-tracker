@@ -3,6 +3,7 @@ import { Menu, LogOut } from 'lucide-react';
 import { useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import AccountManager from './components/AccountManager';
@@ -87,11 +88,11 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col transition-colors duration-300">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 z-40 bg-black/60 dark:bg-black/80 backdrop-blur-sm lg:hidden transition-opacity duration-300"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />
@@ -113,22 +114,22 @@ function AppContent() {
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Mobile Header */}
-          <header className="lg:hidden glass-effect shadow-sm border-b border-white/20 px-4 py-4 sticky top-0 z-30">
+          <header className="lg:hidden glass-effect dark:glass-effect-dark shadow-sm border-b border-white/20 dark:border-slate-700/50 px-4 py-4 sticky top-0 z-30">
             <div className="flex items-center justify-between">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="p-3 rounded-2xl text-slate-600 hover:text-slate-800 hover:bg-white/50 focus-ring transition-all duration-200 button-press"
+                className="p-3 rounded-2xl text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-white/50 dark:hover:bg-slate-700/50 focus-ring transition-all duration-200 button-press"
                 aria-label="Open navigation menu"
                 aria-expanded={sidebarOpen}
               >
                 <Menu className="w-6 h-6" />
               </button>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 dark:from-emerald-400 dark:to-blue-400 bg-clip-text text-transparent">
                 BudgetTracker
               </h1>
               <button
                 onClick={signOut}
-                className="p-3 rounded-2xl text-slate-600 hover:text-red-600 hover:bg-red-50 focus-ring transition-all duration-200 button-press"
+                className="p-3 rounded-2xl text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 focus-ring transition-all duration-200 button-press"
                 aria-label="Sign out"
               >
                 <LogOut className="w-6 h-6" />
@@ -137,7 +138,7 @@ function AppContent() {
           </header>
 
           {/* Content Area */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto transition-colors duration-300">
             <div className="max-w-7xl mx-auto">
               <div className="slide-in">
                 {renderContent()}
@@ -151,9 +152,9 @@ function AppContent() {
       {activeTab !== 'help' && <FloatingHelpButton onNavigate={setActiveTab} />}
 
       {/* Global Footer */}
-      <footer className="glass-effect border-t border-white/20 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 mt-auto">
+      <footer className="glass-effect dark:glass-effect-dark border-t border-white/20 dark:border-slate-700/50 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 mt-auto">
         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-sm sm:text-base text-slate-600 font-medium">
+          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 font-medium">
             Copyright 2025 Zhillan Azmi. All Rights Reserved.
           </p>
         </div>
@@ -167,11 +168,13 @@ function AppContent() {
 
 function App() {
   return (
-    <ToastProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }
 
