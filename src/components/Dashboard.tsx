@@ -165,7 +165,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, onTransactionFormOpen
                 <HelpCircle className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-800">Selamat datang di BudgetTracker! 👋</h3>
+                <h3 className="text-lg font-bold text-slate-800">Selamat datang di Finance Flow! 👋</h3>
                 <p className="text-slate-600">Mulai perjalanan keuangan Anda. Butuh bantuan?</p>
               </div>
             </div>

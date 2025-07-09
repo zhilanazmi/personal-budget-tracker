@@ -150,42 +150,42 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onNavigate, initialTe
             <label className="block text-lg font-bold text-slate-700 mb-6">
               Jenis Transaksi
             </label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, type: 'expense', category: '', accountId: '' })}
-                className={`flex items-center justify-center space-x-4 py-6 px-6 rounded-3xl border-2 transition-all duration-300 button-press focus-ring ${
+                className={`flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3 py-4 sm:py-6 px-3 sm:px-6 rounded-3xl border-2 transition-all duration-300 button-press focus-ring ${
                   formData.type === 'expense'
                     ? 'border-red-300 bg-gradient-to-br from-red-50 to-red-100 text-red-700 shadow-lg shadow-red-500/20'
                     : 'border-slate-200 bg-white/60 text-slate-600 hover:border-slate-300 hover:bg-white/80'
                 }`}
               >
-                <div className={`p-3 rounded-2xl ${
+                <div className={`p-2 sm:p-3 rounded-2xl ${
                   formData.type === 'expense' 
                     ? 'bg-red-500 text-white shadow-lg' 
                     : 'bg-slate-100 text-slate-500'
                 }`}>
-                  <Minus className="w-6 h-6" />
+                  <Minus className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <span className="font-bold text-xl">Pengeluaran</span>
+                <span className="font-bold text-sm sm:text-base text-center">Pengeluaran</span>
               </button>
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, type: 'income', category: '', accountId: '' })}
-                className={`flex items-center justify-center space-x-4 py-6 px-6 rounded-3xl border-2 transition-all duration-300 button-press focus-ring ${
+                className={`flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3 py-4 sm:py-6 px-3 sm:px-6 rounded-3xl border-2 transition-all duration-300 button-press focus-ring ${
                   formData.type === 'income'
                     ? 'border-emerald-300 bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-700 shadow-lg shadow-emerald-500/20'
                     : 'border-slate-200 bg-white/60 text-slate-600 hover:border-slate-300 hover:bg-white/80'
                 }`}
               >
-                <div className={`p-3 rounded-2xl ${
+                <div className={`p-2 sm:p-3 rounded-2xl ${
                   formData.type === 'income' 
                     ? 'bg-emerald-500 text-white shadow-lg' 
                     : 'bg-slate-100 text-slate-500'
                 }`}>
-                  <Plus className="w-6 h-6" />
+                  <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <span className="font-bold text-xl">Pemasukan</span>
+                <span className="font-bold text-sm sm:text-base text-center">Pemasukan</span>
               </button>
             </div>
           </div>
@@ -203,7 +203,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onNavigate, initialTe
                 id="account"
                 value={formData.accountId}
                 onChange={(e) => setFormData({ ...formData, accountId: e.target.value })}
-                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
+                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-m font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
                 required
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
@@ -282,7 +282,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onNavigate, initialTe
                   id="category"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
+                  className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-m font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
                   required
                   style={{
                     backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
@@ -360,7 +360,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onNavigate, initialTe
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
+                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-m font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
                 placeholder="Masukkan deskripsi..."
                 required
               />
@@ -373,17 +373,23 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onNavigate, initialTe
               Tanggal
             </label>
             <div className="relative">
-              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
-                <Calendar className="text-slate-600 w-6 h-6" />
+              <div className="w-full flex items-center border-2 border-slate-200 rounded-3xl bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 focus-within:ring-1 focus-within:ring-emerald-500/20 focus-within:border-emerald-500">
+                <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
+                  <Calendar className="text-slate-600 w-6 h-6" />
+                </div>
+                <input
+                  type="date"
+                  id="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  className="w-full pl-20 pr-6 py-6 border-none outline-none bg-transparent text-m font-semibold"
+                  required
+                  style={{
+                    // Ensures the text is centered if you want to mimic the image
+                    textAlign: 'center',
+                  }}
+                />
               </div>
-              <input
-                type="date"
-                id="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
-                required
-              />
             </div>
           </div>
 

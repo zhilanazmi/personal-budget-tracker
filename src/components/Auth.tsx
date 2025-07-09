@@ -61,7 +61,7 @@ const Auth: React.FC = () => {
             </div>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 dark:from-emerald-400 dark:to-blue-400 bg-clip-text text-transparent mb-2">
-            BudgetTracker
+            FinFlow
           </h1>
           <p className="text-slate-600 dark:text-slate-300 text-lg font-medium">
             Kelola keuangan pribadi Anda dengan mudah

@@ -616,7 +616,7 @@ const Help: React.FC = () => {
           </div>
           <a
             href="/MANUAL_PENGGUNA.md"
-            download="Manual_BudgetTracker.md"
+            download="Manual_FinFlow.md"
             className="flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-2xl hover:shadow-lg transition-all duration-200 font-semibold group"
             title="Download Manual dalam format Markdown"
           >

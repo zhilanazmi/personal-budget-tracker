@@ -162,7 +162,7 @@ function AppContent() {
                 <Menu className="w-6 h-6" />
               </button>
               <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 dark:from-emerald-400 dark:to-blue-400 bg-clip-text text-transparent">
-                BudgetTracker
+                FinFlow
               </h1>
               <button
                 onClick={signOut}

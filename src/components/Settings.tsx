@@ -330,11 +330,7 @@ const Settings: React.FC = () => {
         <div className="space-y-4">
           <div className="flex justify-between items-center p-4 bg-white/20 rounded-2xl">
             <span className="font-semibold text-slate-700">Versi Aplikasi</span>
-            <span className="text-slate-600">1.0.0</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-white/20 rounded-2xl">
-            <span className="font-semibold text-slate-700">Database</span>
-            <span className="text-emerald-600 font-semibold">Supabase</span>
+            <span className="text-slate-600">1.0.1</span>
           </div>
           <div className="flex justify-between items-center p-4 bg-white/20 rounded-2xl">
             <span className="font-semibold text-slate-700">Mata Uang</span>
