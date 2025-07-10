@@ -203,13 +203,13 @@ const AccountManager: React.FC = () => {
       {/* Total Balance Card */}
       <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '100ms' }}>
         <div className="text-center">
-          <p className="text-lg font-bold text-slate-600 mb-2 uppercase tracking-wide">Total Saldo</p>
+          <p className="text-lg font-bold text-slate-600 dark:text-slate-300 mb-2 uppercase tracking-wide">Total Saldo</p>
           <p className={`text-5xl font-bold tracking-tight ${
             totalBalance >= 0 ? 'text-emerald-600' : 'text-red-600'
           }`}>
             {formatCurrency(totalBalance)}
           </p>
-          <p className="text-slate-500 mt-2 font-medium">{accounts.length} Akun Aktif</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">{accounts.length} Akun Aktif</p>
         </div>
       </div>
 
@@ -217,7 +217,7 @@ const AccountManager: React.FC = () => {
       <div className="fade-in" style={{ animationDelay: '200ms' }}>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="w-full flex items-center justify-center space-x-4 p-6 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-3xl text-slate-700 font-bold hover:from-emerald-500/20 hover:to-blue-500/20 transition-all duration-300 button-press focus-ring border-2 border-emerald-200/50 hover:border-emerald-300/70"
+          className="w-full flex items-center justify-center space-x-4 p-6 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-3xl text-slate-700 dark:text-slate-200 font-bold hover:from-emerald-500/20 hover:to-blue-500/20 transition-all duration-300 button-press focus-ring border-2 border-emerald-200/50 dark:border-emerald-500/30 hover:border-emerald-300/70"
         >
           <div className="p-3 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-2xl shadow-lg">
             <Plus className="w-6 h-6 text-white" />
@@ -229,21 +229,21 @@ const AccountManager: React.FC = () => {
       {/* Add/Edit Account Form */}
       {showAddForm && (
         <div className="glass-effect rounded-3xl p-8 border border-white/20 slide-in">
-          <h3 className="text-2xl font-bold text-slate-800 mb-8">
+          <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-8">
             {editingAccount ? 'Edit Akun' : 'Tambah Akun Baru'}
           </h3>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Account Name */}
             <div>
-              <label className="block text-lg font-bold text-slate-700 mb-4">
+              <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-4">
                 Nama Akun
               </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-6 py-5 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus"
+                className="w-full px-6 py-5 border-2 border-slate-200 dark:border-slate-600 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 dark:bg-slate-700/60 dark:text-slate-100 backdrop-blur-sm input-focus"
                 placeholder="Contoh: Bank BCA, GoPay, Tunai"
                 required
               />
@@ -251,7 +251,7 @@ const AccountManager: React.FC = () => {
 
             {/* Account Type */}
             <div>
-              <label className="block text-lg font-bold text-slate-700 mb-4">
+              <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-4">
                 Jenis Akun
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -265,7 +265,7 @@ const AccountManager: React.FC = () => {
                       className={`flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all duration-200 button-press ${
                         formData.type === type.value
                           ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
-                          : 'border-slate-200 bg-white/60 text-slate-600 hover:border-slate-300'
+                          : 'border-slate-200 dark:border-slate-600 bg-white/60 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500'
                       }`}
                     >
                       <IconComponent className="w-5 h-5" />
@@ -278,7 +278,7 @@ const AccountManager: React.FC = () => {
 
             {/* Color Selection */}
             <div>
-              <label className="block text-lg font-bold text-slate-700 mb-4">
+              <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-4">
                 Warna
               </label>
               <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-3">
@@ -307,7 +307,7 @@ const AccountManager: React.FC = () => {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-8 py-5 bg-white/60 text-slate-700 rounded-2xl hover:bg-white/80 transition-all duration-300 font-bold border-2 border-slate-200 hover:border-slate-300 button-press focus-ring"
+                className="px-8 py-5 bg-white/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-200 rounded-2xl hover:bg-white/80 dark:hover:bg-slate-600/80 transition-all duration-300 font-bold border-2 border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 button-press focus-ring"
               >
                 Batal
               </button>
@@ -323,10 +323,10 @@ const AccountManager: React.FC = () => {
           const accountTransactions = getAccountTransactions(account.id);
           
           return (
-            <div
+          <div className="p-6 border-t border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700">
               key={account.id}
               className="glass-effect rounded-3xl p-6 border border-white/20 transition-all duration-300 group hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 hover:border-blue-200/50 fade-in relative overflow-hidden"
-              style={{ animationDelay: `${300 + index * 100}ms` }}
+              className="w-full py-3 bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-2xl hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors duration-200 font-semibold button-press focus-ring"
             >
               {/* Hover Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
@@ -366,8 +366,8 @@ const AccountManager: React.FC = () => {
                 </div>
                 
                 <div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-800 transition-colors duration-300">{account.name}</h3>
-                  <p className="text-sm text-slate-500 mb-4 capitalize font-medium">
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2 group-hover:text-blue-800 dark:group-hover:text-blue-300 transition-colors duration-300">{account.name}</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 capitalize font-medium">
                     {accountTypes.find(t => t.value === account.type)?.label || account.type}
                   </p>
                   <p className={`text-3xl font-bold tracking-tight transition-all duration-300 group-hover:scale-105 ${
@@ -378,26 +378,26 @@ const AccountManager: React.FC = () => {
                   
                   {/* Quick Transaction Preview */}
                   <div className="mt-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                    <div className="text-xs text-slate-500 mb-2 font-semibold">Transaksi Terbaru:</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mb-2 font-semibold">Transaksi Terbaru:</div>
                     {accountTransactions.length > 0 ? (
                       <div className="space-y-1">
                         {accountTransactions.slice(0, 2).map((transaction) => (
                           <div key={transaction.id} className="flex items-center justify-between text-xs">
-                            <span className="text-slate-600 truncate flex-1 mr-2">{transaction.description}</span>
+                            <span className="text-slate-600 dark:text-slate-300 truncate flex-1 mr-2">{transaction.description}</span>
                             <span className={`font-bold ${getTransactionColor(transaction, account.id)}`}>
                               {getTransactionAmount(transaction, account.id) > 0 ? '+' : ''}
                               {formatCurrency(Math.abs(getTransactionAmount(transaction, account.id)))}
                             </span>
                           </div>
-                        ))}
+                             <p className="text-xs text-slate-500 dark:text-slate-400">
                         {accountTransactions.length > 2 && (
-                          <div className="text-xs text-slate-400 text-center pt-1">
+                          <div className="text-xs text-slate-400 dark:text-slate-500 text-center pt-1">
                             +{accountTransactions.length - 2} transaksi lainnya
                           </div>
                         )}
                       </div>
                     ) : (
-                      <div className="text-xs text-slate-400 italic">Belum ada transaksi</div>
+                      <div className="text-xs text-slate-400 dark:text-slate-500 italic">Belum ada transaksi</div>
                     )}
                   </div>
                 </div>
@@ -413,7 +413,7 @@ const AccountManager: React.FC = () => {
             <Wallet className="w-12 h-12 text-slate-400" />
           </div>
           <h3 className="text-2xl font-bold text-slate-700 mb-3">Belum ada akun</h3>
-          <p className="text-slate-500 text-lg max-w-md mx-auto">
+          <p className="text-slate-500 dark:text-slate-400 text-lg max-w-md mx-auto">
             Tambahkan akun pertama Anda untuk mulai mengelola keuangan dengan lebih terorganisir
           </p>
         </div>
@@ -422,9 +422,9 @@ const AccountManager: React.FC = () => {
       {/* Account Details Modal */}
       {selectedAccountDetails && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl">
+         <div className="bg-white dark:bg-slate-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-blue-50">
+           <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-600 bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-700 dark:to-slate-600">
               <div className="flex items-center space-x-4">
                 <div 
                   className="p-3 rounded-2xl shadow-lg"
@@ -433,23 +433,23 @@ const AccountManager: React.FC = () => {
                   {React.createElement(getIconComponent(selectedAccountDetails.icon), { className: "w-6 h-6 text-white" })}
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-800">{selectedAccountDetails.name}</h3>
-                  <p className="text-slate-600 capitalize">
+                 <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{selectedAccountDetails.name}</h3>
+                 <p className="text-slate-600 dark:text-slate-300 capitalize">
                     {accountTypes.find(t => t.value === selectedAccountDetails.type)?.label || selectedAccountDetails.type}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedAccountDetails(null)}
-                className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors duration-200 focus-ring"
+               className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors duration-200 focus-ring"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             {/* Account Balance */}
-            <div className="p-6 border-b border-slate-200 text-center bg-gradient-to-r from-slate-50/50 to-blue-50/50">
-              <p className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wide">Saldo Saat Ini</p>
+           <div className="p-6 border-b border-slate-200 dark:border-slate-600 text-center bg-gradient-to-r from-slate-50/50 to-blue-50/50 dark:from-slate-800/50 dark:to-slate-700/50">
+             <p className="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2 uppercase tracking-wide">Saldo Saat Ini</p>
               <p className={`text-4xl font-bold tracking-tight ${
                 selectedAccountDetails.balance >= 0 ? 'text-emerald-600' : 'text-red-600'
               }`}>
@@ -459,7 +459,7 @@ const AccountManager: React.FC = () => {
 
             {/* Transactions List */}
             <div className="p-6">
-              <h4 className="text-lg font-bold text-slate-800 mb-4 flex items-center">
+             <h4 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center">
                 <Calendar className="w-5 h-5 mr-2" />
                 Riwayat Transaksi (10 Terbaru)
               </h4>
@@ -468,8 +468,8 @@ const AccountManager: React.FC = () => {
                 {getAccountTransactions(selectedAccountDetails.id).length === 0 ? (
                   <div className="text-center py-12">
                     <Calendar className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                    <h5 className="text-xl font-semibold text-slate-600 mb-2">Belum ada transaksi</h5>
-                    <p className="text-slate-500">Transaksi akan muncul di sini setelah Anda menambahkannya</p>
+                   <h5 className="text-xl font-semibold text-slate-600 dark:text-slate-300 mb-2">Belum ada transaksi</h5>
+                   <p className="text-slate-500 dark:text-slate-400">Transaksi akan muncul di sini setelah Anda menambahkannya</p>
                   </div>
                 ) : (
                   getAccountTransactions(selectedAccountDetails.id).map((transaction, index) => {
@@ -479,7 +479,7 @@ const AccountManager: React.FC = () => {
                     return (
                       <div 
                         key={transaction.id} 
-                        className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors duration-200"
+                       className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors duration-200"
                         style={{ animationDelay: `${index * 50}ms` }}
                       >
                         <div className="flex items-center space-x-4 flex-1 min-w-0">
@@ -493,8 +493,8 @@ const AccountManager: React.FC = () => {
                             {getTransactionIcon(transaction, selectedAccountDetails.id)}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h6 className="font-semibold text-slate-800 truncate">{transaction.description}</h6>
-                            <div className="flex items-center space-x-2 text-sm text-slate-500">
+                           <h6 className="font-semibold text-slate-800 dark:text-slate-100 truncate">{transaction.description}</h6>
+                           <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
                               <span>{transaction.category}</span>
                               <span>•</span>
                               <span>{formatDate(transaction.date)}</span>
@@ -524,8 +524,8 @@ const AccountManager: React.FC = () => {
                 onClick={() => setSelectedAccountDetails(null)}
                 className="w-full py-3 bg-slate-200 text-slate-700 rounded-2xl hover:bg-slate-300 transition-colors duration-200 font-semibold button-press focus-ring"
               >
-                Tutup
-              </button>
+              <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Kelola Akun</h2>
+              <p className="text-slate-600 dark:text-slate-300 text-lg sm:text-base font-medium">Atur dompet dan rekening Anda</p>
             </div>
           </div>
         </div>

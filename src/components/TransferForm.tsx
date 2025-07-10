@@ -88,8 +88,8 @@ const TransferForm: React.FC = () => {
               <ArrowRightLeft className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Transfer Antar Akun</h2>
-              <p className="text-slate-600 text-lg sm:text-base font-medium">Pindahkan dana antar akun Anda</p>
+              <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Transfer Antar Akun</h2>
+              <p className="text-slate-600 dark:text-slate-300 text-lg sm:text-base font-medium">Pindahkan dana antar akun Anda</p>
             </div>
           </div>
         </div>
@@ -97,17 +97,17 @@ const TransferForm: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* From Account */}
           <div className="fade-in" style={{ animationDelay: '100ms' }}>
-            <label className="block text-lg font-bold text-slate-700 mb-4">
+            <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-4">
               Dari Akun
             </label>
             <div className="relative">
-              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
-                <Wallet className="text-slate-600 w-6 h-6" />
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 dark:bg-slate-600 rounded-xl z-10">
+                <Wallet className="text-slate-600 dark:text-slate-300 w-6 h-6" />
               </div>
               <select
                 value={formData.fromAccountId}
                 onChange={(e) => setFormData({ ...formData, fromAccountId: e.target.value })}
-                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
+                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 dark:border-slate-600 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 dark:bg-slate-700/60 dark:text-slate-100 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
                 required
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
@@ -135,7 +135,7 @@ const TransferForm: React.FC = () => {
               )}
             </div>
             {fromAccount && (
-              <p className="mt-3 text-slate-600 font-medium">
+              <p className="mt-3 text-slate-600 dark:text-slate-300 font-medium">
                 Saldo tersedia: <span className="font-bold text-emerald-600">{formatCurrency(fromAccount.balance)}</span>
               </p>
             )}
@@ -150,17 +150,17 @@ const TransferForm: React.FC = () => {
 
           {/* To Account */}
           <div className="fade-in" style={{ animationDelay: '300ms' }}>
-            <label className="block text-lg font-bold text-slate-700 mb-4">
+            <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-4">
               Ke Akun
             </label>
             <div className="relative">
-              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
-                <Wallet className="text-slate-600 w-6 h-6" />
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 dark:bg-slate-600 rounded-xl z-10">
+                <Wallet className="text-slate-600 dark:text-slate-300 w-6 h-6" />
               </div>
               <select
                 value={formData.toAccountId}
                 onChange={(e) => setFormData({ ...formData, toAccountId: e.target.value })}
-                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
+                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 dark:border-slate-600 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 dark:bg-slate-700/60 dark:text-slate-100 backdrop-blur-sm input-focus transition-all duration-200 appearance-none"
                 required
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
@@ -190,7 +190,7 @@ const TransferForm: React.FC = () => {
               )}
             </div>
             {toAccount && (
-              <p className="mt-3 text-slate-600 font-medium">
+              <p className="mt-3 text-slate-600 dark:text-slate-300 font-medium">
                 Saldo saat ini: <span className="font-bold text-blue-600">{formatCurrency(toAccount.balance)}</span>
               </p>
             )}
@@ -198,12 +198,12 @@ const TransferForm: React.FC = () => {
 
           {/* Amount */}
           <div className="fade-in" style={{ animationDelay: '400ms' }}>
-            <label className="block text-lg font-bold text-slate-700 mb-4">
+            <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-4">
               Jumlah Transfer
             </label>
             <div className="relative">
-              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
-                <DollarSign className="text-slate-600 w-6 h-6" />
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 dark:bg-slate-600 rounded-xl z-10">
+                <DollarSign className="text-slate-600 dark:text-slate-300 w-6 h-6" />
               </div>
               <input
                 type="text"
@@ -213,12 +213,12 @@ const TransferForm: React.FC = () => {
                   setDisplayAmount(formatted);
                   setFormData({ ...formData, amount: formatted });
                 }}
-                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-2xl font-bold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
+                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 dark:border-slate-600 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-2xl font-bold bg-white/60 dark:bg-slate-700/60 dark:text-slate-100 backdrop-blur-sm input-focus transition-all duration-200"
                 placeholder="Contoh: 100.000"
                 inputMode="numeric"
                 required
               />
-              <div className="absolute right-6 top-1/2 transform -translate-y-1/2 text-slate-500 font-bold text-lg">
+              <div className="absolute right-6 top-1/2 transform -translate-y-1/2 text-slate-500 dark:text-slate-400 font-bold text-lg">
                 IDR
               </div>
             </div>
@@ -226,18 +226,18 @@ const TransferForm: React.FC = () => {
 
           {/* Description */}
           <div className="fade-in" style={{ animationDelay: '500ms' }}>
-            <label className="block text-lg font-bold text-slate-700 mb-4">
+            <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-4">
               Keterangan
             </label>
             <div className="relative">
-              <div className="absolute left-6 top-6 p-2 bg-slate-100 rounded-xl z-10">
-                <FileText className="text-slate-600 w-6 h-6" />
+              <div className="absolute left-6 top-6 p-2 bg-slate-100 dark:bg-slate-600 rounded-xl z-10">
+                <FileText className="text-slate-600 dark:text-slate-300 w-6 h-6" />
               </div>
               <input
                 type="text"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
+                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 dark:border-slate-600 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 dark:bg-slate-700/60 dark:text-slate-100 backdrop-blur-sm input-focus transition-all duration-200"
                 placeholder="Contoh: Tarik tunai, Top up e-wallet"
                 required
               />
@@ -246,18 +246,18 @@ const TransferForm: React.FC = () => {
 
           {/* Date */}
           <div className="fade-in" style={{ animationDelay: '600ms' }}>
-            <label className="block text-lg font-bold text-slate-700 mb-4">
+            <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-4">
               Tanggal
             </label>
             <div className="relative">
-              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 rounded-xl z-10">
-                <Calendar className="text-slate-600 w-6 h-6" />
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 p-2 bg-slate-100 dark:bg-slate-600 rounded-xl z-10">
+                <Calendar className="text-slate-600 dark:text-slate-300 w-6 h-6" />
               </div>
               <input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
+                className="w-full pl-20 pr-6 py-6 border-2 border-slate-200 dark:border-slate-600 rounded-3xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-xl font-semibold bg-white/60 dark:bg-slate-700/60 dark:text-slate-100 backdrop-blur-sm input-focus transition-all duration-200"
                 required
               />
             </div>

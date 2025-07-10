@@ -132,8 +132,8 @@ const TransactionList: React.FC = () => {
             <Eye className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl sm:text-4xl lg:text-3xl font-bold text-slate-800 tracking-tight">Riwayat Transaksi</h2>
-            <p className="text-base sm:text-lg lg:text-base text-slate-600 font-medium">Kelola riwayat transaksi Anda</p>
+            <h2 className="text-2xl sm:text-4xl lg:text-3xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Riwayat Transaksi</h2>
+            <p className="text-base sm:text-lg lg:text-base text-slate-600 dark:text-slate-300 font-medium">Kelola riwayat transaksi Anda</p>
           </div>
         </div>
       </div>
@@ -142,22 +142,22 @@ const TransactionList: React.FC = () => {
       <div className="glass-effect rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-white/20 fade-in" style={{ animationDelay: '100ms' }}>
         {/* Search Bar */}
         <div className="relative mb-4 sm:mb-6">
-          <div className="absolute left-4 sm:left-6 top-1/2 transform -translate-y-1/2 p-1.5 sm:p-2 bg-slate-100 rounded-lg sm:rounded-xl">
-            <Search className="text-slate-600 w-4 h-4 sm:w-5 sm:h-5" />
+          <div className="absolute left-4 sm:left-6 top-1/2 transform -translate-y-1/2 p-1.5 sm:p-2 bg-slate-100 dark:bg-slate-600 rounded-lg sm:rounded-xl">
+            <Search className="text-slate-600 dark:text-slate-300 w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <input
             type="text"
             placeholder="Cari transaksi, kategori, atau akun..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-14 sm:pl-20 pr-4 sm:pr-6 py-3 sm:py-5 border-2 border-slate-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-base sm:text-lg font-medium bg-white/60 backdrop-blur-sm input-focus transition-all duration-200"
+            className="w-full pl-14 sm:pl-20 pr-4 sm:pr-6 py-3 sm:py-5 border-2 border-slate-200 dark:border-slate-600 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-base sm:text-lg font-medium bg-white/60 dark:bg-slate-700/60 dark:text-slate-100 backdrop-blur-sm input-focus transition-all duration-200"
           />
         </div>
 
         {/* Filter Toggle Button (Mobile) */}
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="sm:hidden w-full flex items-center justify-between py-3 px-4 bg-white/40 rounded-xl text-slate-700 font-semibold border border-white/30 hover:bg-white/60 transition-all duration-200 button-press mb-4"
+          className="sm:hidden w-full flex items-center justify-between py-3 px-4 bg-white/40 dark:bg-slate-700/40 rounded-xl text-slate-700 dark:text-slate-200 font-semibold border border-white/30 dark:border-slate-600/30 hover:bg-white/60 dark:hover:bg-slate-600/60 transition-all duration-200 button-press mb-4"
         >
           <div className="flex items-center space-x-3">
             <Filter className="w-4 h-4" />
@@ -172,7 +172,7 @@ const TransactionList: React.FC = () => {
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as 'all' | 'income' | 'expense' | 'transfer')}
-              className="w-full sm:w-auto px-4 sm:px-6 py-3 sm:py-4 border-2 border-slate-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-base sm:text-lg font-semibold bg-white/60 backdrop-blur-sm appearance-none cursor-pointer"
+              className="w-full sm:w-auto px-4 sm:px-6 py-3 sm:py-4 border-2 border-slate-200 dark:border-slate-600 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-base sm:text-lg font-semibold bg-white/60 dark:bg-slate-700/60 dark:text-slate-100 backdrop-blur-sm appearance-none cursor-pointer"
             >
               <option value="all">Semua Jenis</option>
               <option value="income">Pemasukan Saja</option>
@@ -185,7 +185,7 @@ const TransactionList: React.FC = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'date' | 'amount')}
-              className="w-full sm:w-auto px-4 sm:px-6 py-3 sm:py-4 border-2 border-slate-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-base sm:text-lg font-semibold bg-white/60 backdrop-blur-sm appearance-none cursor-pointer"
+              className="w-full sm:w-auto px-4 sm:px-6 py-3 sm:py-4 border-2 border-slate-200 dark:border-slate-600 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-base sm:text-lg font-semibold bg-white/60 dark:bg-slate-700/60 dark:text-slate-100 backdrop-blur-sm appearance-none cursor-pointer"
             >
               <option value="date">Urutkan berdasarkan Tanggal</option>
               <option value="amount">Urutkan berdasarkan Jumlah</option>
@@ -196,8 +196,8 @@ const TransactionList: React.FC = () => {
 
       {/* Transaction List */}
       <div className="glass-effect rounded-2xl sm:rounded-3xl border border-white/20 overflow-hidden fade-in" style={{ animationDelay: '200ms' }}>
-        <div className="p-4 sm:p-6 lg:p-8 border-b border-white/20 bg-gradient-to-r from-slate-50/50 to-blue-50/50">
-          <h3 className="text-lg sm:text-2xl font-bold text-slate-800">
+        <div className="p-4 sm:p-6 lg:p-8 border-b border-white/20 dark:border-slate-600/20 bg-gradient-to-r from-slate-50/50 to-blue-50/50 dark:from-slate-800/50 dark:to-slate-700/50">
+          <h3 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-slate-100">
             {filteredTransactions.length} Transaksi
           </h3>
         </div>
@@ -208,7 +208,7 @@ const TransactionList: React.FC = () => {
               <Calendar className="w-8 h-8 sm:w-12 sm:h-12 text-slate-400" />
             </div>
             <h3 className="text-xl sm:text-2xl font-bold text-slate-700 mb-2 sm:mb-3">Tidak ada transaksi ditemukan</h3>
-            <p className="text-base sm:text-lg text-slate-500 max-w-md mx-auto">
+            <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-md mx-auto">
               {searchTerm || filterType !== 'all' 
                 ? 'Coba sesuaikan pencarian atau filter Anda'
                 : 'Mulai dengan menambahkan transaksi pertama Anda'
@@ -231,16 +231,16 @@ const TransactionList: React.FC = () => {
                         {getTransactionIcon(transaction.type)}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-bold text-slate-800 text-base truncate mb-1">{transaction.description}</h4>
-                        <div className="flex items-center space-x-2 text-slate-500 text-sm mb-1">
-                          <div className="w-2 h-2 rounded-full bg-slate-300" />
+                        <h4 className="font-bold text-slate-800 dark:text-slate-100 text-base truncate mb-1">{transaction.description}</h4>
+                        <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400 text-sm mb-1">
+                          <div className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-500" />
                           <span className="font-semibold truncate">{transaction.category}</span>
                         </div>
-                        <div className="flex items-center space-x-2 text-slate-500 text-sm mb-1">
+                        <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400 text-sm mb-1">
                           <Wallet className="w-3 h-3" />
                           <span className="font-medium truncate">{getAccountDisplayText(transaction)}</span>
                         </div>
-                        <div className="flex items-center space-x-2 text-slate-500 text-sm">
+                        <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400 text-sm">
                           <Calendar className="w-3 h-3" />
                           <span className="font-medium">{formatDate(transaction.date)}</span>
                         </div>
@@ -269,10 +269,10 @@ const TransactionList: React.FC = () => {
                       {getTransactionIcon(transaction.type)}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="font-bold text-slate-800 text-lg lg:text-xl truncate mb-2">{transaction.description}</h4>
-                      <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4 text-slate-500">
+                      <h4 className="font-bold text-slate-800 dark:text-slate-100 text-lg lg:text-xl truncate mb-2">{transaction.description}</h4>
+                      <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4 text-slate-500 dark:text-slate-400">
                         <div className="flex items-center space-x-2 mb-1 lg:mb-0">
-                          <div className="w-3 h-3 rounded-full bg-slate-300" />
+                          <div className="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-500" />
                           <span className="font-semibold">{transaction.category}</span>
                         </div>
                         <div className="flex items-center space-x-2 mb-1 lg:mb-0">

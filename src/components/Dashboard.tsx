@@ -141,8 +141,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, onTransactionFormOpen
           )}
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-600 mb-3 uppercase tracking-wide">{title}</p>
-          <p className={`text-3xl sm:text-4xl font-bold tracking-tight ${textClasses[color as keyof typeof textClasses]}`}>
+          <p className="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-3 uppercase tracking-wide">{title}</p>
+          <p className={`text-3xl sm:text-4xl font-bold tracking-tight ${textClasses[color as keyof typeof textClasses]} dark:text-slate-100`}>
             {formatCurrency(amount)}
           </p>
         </div>
@@ -187,8 +187,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, onTransactionFormOpen
               <Sparkles className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Dashboard</h2>
-              <p className="text-slate-600 text-lg sm:text-base font-medium">Ringkasan keuangan Anda</p>
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Saldo Akun</h3>
+              <p className="text-slate-600 dark:text-slate-300">Mulai perjalanan keuangan Anda. Butuh bantuan?</p>
             </div>
           </div>
           <button
@@ -267,7 +267,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, onTransactionFormOpen
               <Wallet className="w-10 h-10 text-slate-400" />
             </div>
             <h4 className="text-xl font-semibold text-slate-700 mb-2">Belum ada akun</h4>
-            <p className="text-slate-500 text-lg">Tambahkan akun pertama Anda</p>
+            <p className="text-slate-500 dark:text-slate-400 text-lg">Mulai catat pengeluaran untuk melihat insight</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -285,8 +285,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, onTransactionFormOpen
                     <Wallet className="w-5 h-5 text-white" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-slate-800 truncate">{account.name}</p>
-                    <p className="text-sm text-slate-500 capitalize">{account.type.replace('_', ' ')}</p>
+                    <p className="font-semibold text-slate-800 dark:text-slate-100 truncate">{account.name}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 capitalize">{account.type.replace('_', ' ')}</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -311,7 +311,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, onTransactionFormOpen
               <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
                 <CreditCard className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-800">Aktivitas Terbaru</h3>
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Aktivitas Terbaru</h3>
             </div>
             <button 
               onClick={() => onNavigate?.('transactions')}
@@ -350,8 +350,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, onTransactionFormOpen
                       </span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-slate-800 truncate text-lg">{transaction.description}</p>
-                      <p className="text-slate-500 font-medium">{transaction.category}</p>
+                      <p className="font-semibold text-slate-800 dark:text-slate-100 truncate text-lg">{transaction.description}</p>
+                      <p className="text-slate-500 dark:text-slate-400 font-medium">{transaction.category}</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -375,7 +375,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, onTransactionFormOpen
               <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg">
                 <BarChart3 className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-800">Kategori Teratas</h3>
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Kategori Teratas</h3>
             </div>
             <button 
               onClick={() => onNavigate?.('analytics')}
@@ -405,11 +405,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, onTransactionFormOpen
                     <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-sm">
                       {index + 1}
                     </div>
-                    <span className="font-semibold text-slate-800 text-lg">{category}</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-100 text-lg">{category}</span>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-slate-800 text-xl">{formatCurrency(amount)}</p>
-                    <p className="text-sm text-slate-500 font-medium">
+                    <p className="font-bold text-slate-800 dark:text-slate-100 text-xl">{formatCurrency(amount)}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
                       {((amount / monthData.totalExpenses) * 100).toFixed(1)}%
                     </p>
                   </div>
