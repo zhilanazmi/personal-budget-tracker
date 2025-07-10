@@ -111,11 +111,11 @@ const Settings: React.FC = () => {
         className="w-12 h-12 rounded-xl shadow-sm"
         style={{ backgroundColor: category.color }}
       />
-      <span className="text-lg font-bold text-slate-800 flex-1">{category.name}</span>
+      <span className="text-lg font-bold text-slate-800 dark:text-slate-100 flex-1">{category.name}</span>
       
       {/* Show label for custom categories */}
       {category.isCustom && (
-        <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full font-semibold">
+        <span className="text-sm text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-600 px-3 py-1.5 rounded-full font-semibold">
           Kustom
         </span>
       )}
@@ -152,8 +152,8 @@ const Settings: React.FC = () => {
             <SettingsIcon className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Pengaturan</h2>
-            <p className="text-slate-600 text-lg sm:text-base font-medium">Kelola kategori dan data Anda</p>
+            <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Pengaturan</h2>
+            <p className="text-slate-600 dark:text-slate-300 text-lg sm:text-base font-medium">Kelola kategori dan data Anda</p>
           </div>
         </div>
       </div>
@@ -162,7 +162,7 @@ const Settings: React.FC = () => {
       <div className="glass-effect rounded-3xl p-8 border border-white/20 fade-in" style={{ animationDelay: '100ms' }}>
         <button
           onClick={() => setShowAddCategory(!showAddCategory)}
-          className="w-full flex items-center justify-between p-6 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-2xl text-slate-700 font-bold hover:from-emerald-500/20 hover:to-blue-500/20 transition-all duration-300 button-press focus-ring border border-emerald-200/50"
+          className="w-full flex items-center justify-between p-6 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-2xl text-slate-700 dark:text-slate-200 font-bold hover:from-emerald-500/20 hover:to-blue-500/20 transition-all duration-300 button-press focus-ring border border-emerald-200/50 dark:border-emerald-500/30"
         >
           <div className="flex items-center space-x-4">
             <div className="p-3 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-2xl shadow-lg">
@@ -176,28 +176,28 @@ const Settings: React.FC = () => {
         {showAddCategory && (
           <form onSubmit={handleAddCategory} className="mt-8 space-y-8 slide-in">
             <div>
-              <label className="block text-lg font-bold text-slate-700 mb-4">
+              <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-4">
                 Nama Kategori
               </label>
               <input
                 type="text"
                 value={newCategory.name}
                 onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-                className="w-full px-6 py-5 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 backdrop-blur-sm input-focus"
+                className="w-full px-6 py-5 border-2 border-slate-200 dark:border-slate-600 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-xl font-semibold bg-white/60 dark:bg-slate-700/60 dark:text-slate-100 backdrop-blur-sm input-focus"
                 placeholder="🏷️ Masukkan nama kategori"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-lg font-bold text-slate-700 mb-4">
+              <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-4">
                 Tipe Kategori
               </label>
               <div className="grid grid-cols-2 gap-4">
                 <label className={`flex items-center justify-center p-6 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${
                   newCategory.type === 'expense' 
                     ? 'border-red-500 bg-red-50 text-red-700' 
-                    : 'border-slate-200 bg-white/60 text-slate-700 hover:border-slate-300'
+                    : 'border-slate-200 dark:border-slate-600 bg-white/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-200 hover:border-slate-300 dark:hover:border-slate-500'
                 }`}>
                   <input
                     type="radio"
@@ -216,7 +216,7 @@ const Settings: React.FC = () => {
                 <label className={`flex items-center justify-center p-6 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${
                   newCategory.type === 'income' 
                     ? 'border-green-500 bg-green-50 text-green-700' 
-                    : 'border-slate-200 bg-white/60 text-slate-700 hover:border-slate-300'
+                    : 'border-slate-200 dark:border-slate-600 bg-white/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-200 hover:border-slate-300 dark:hover:border-slate-500'
                 }`}>
                   <input
                     type="radio"
@@ -235,7 +235,7 @@ const Settings: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-lg font-bold text-slate-700 mb-4">
+              <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-4">
                 Warna
               </label>
               <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-4">
@@ -263,7 +263,7 @@ const Settings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowAddCategory(false)}
-                className="px-8 py-5 bg-white/60 text-slate-700 rounded-2xl hover:bg-white/80 transition-all duration-300 font-bold border-2 border-slate-200 hover:border-slate-300 button-press focus-ring"
+                className="px-8 py-5 bg-white/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-200 rounded-2xl hover:bg-white/80 dark:hover:bg-slate-600/80 transition-all duration-300 font-bold border-2 border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 button-press focus-ring"
               >
                 Batal
               </button>
@@ -278,12 +278,12 @@ const Settings: React.FC = () => {
           <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg">
             <Palette className="w-6 h-6 text-white" />
           </div>
-          <h3 className="text-2xl font-bold text-slate-800">Kategori Saat Ini</h3>
+          <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Kategori Saat Ini</h3>
         </div>
 
         {/* Expense Categories */}
         <div className="mb-8">
-          <h4 className="text-xl font-bold text-slate-700 mb-4 flex items-center">
+          <h4 className="text-xl font-bold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
             <span className="text-2xl mr-2">💸</span>
             Kategori Pengeluaran
           </h4>
@@ -301,7 +301,7 @@ const Settings: React.FC = () => {
 
         {/* Income Categories */}
         <div>
-          <h4 className="text-xl font-bold text-slate-700 mb-4 flex items-center">
+          <h4 className="text-xl font-bold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
             <span className="text-2xl mr-2">💰</span>
             Kategori Pemasukan
           </h4>
@@ -324,17 +324,17 @@ const Settings: React.FC = () => {
           <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
             <SettingsIcon className="w-6 h-6 text-white" />
           </div>
-          <h3 className="text-2xl font-bold text-slate-800">Informasi Aplikasi</h3>
+          <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Informasi Aplikasi</h3>
         </div>
 
         <div className="space-y-4">
-          <div className="flex justify-between items-center p-4 bg-white/20 rounded-2xl">
-            <span className="font-semibold text-slate-700">Versi Aplikasi</span>
-            <span className="text-slate-600">1.0.1</span>
+          <div className="flex justify-between items-center p-4 bg-white/20 dark:bg-slate-700/20 rounded-2xl">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">Versi Aplikasi</span>
+            <span className="text-slate-600 dark:text-slate-300">1.0.1</span>
           </div>
-          <div className="flex justify-between items-center p-4 bg-white/20 rounded-2xl">
-            <span className="font-semibold text-slate-700">Mata Uang</span>
-            <span className="text-slate-600">Rupiah (IDR)</span>
+          <div className="flex justify-between items-center p-4 bg-white/20 dark:bg-slate-700/20 rounded-2xl">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">Mata Uang</span>
+            <span className="text-slate-600 dark:text-slate-300">Rupiah (IDR)</span>
           </div>
         </div>
       </div>
@@ -342,12 +342,12 @@ const Settings: React.FC = () => {
       {/* Edit Category Modal */}
       {editingCategory && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl p-8 mx-4 w-full max-w-md shadow-2xl">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 mx-4 w-full max-w-md shadow-2xl">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold text-slate-800">Edit Kategori</h3>
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Edit Kategori</h3>
               <button
                 onClick={() => setEditingCategory(null)}
-                className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors duration-200 focus-ring"
+                className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors duration-200 focus-ring"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -355,21 +355,21 @@ const Settings: React.FC = () => {
 
             <form onSubmit={handleEditCategory} className="space-y-6">
               <div>
-                <label className="block text-lg font-bold text-slate-700 mb-3">
+                <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-3">
                   Nama Kategori
                 </label>
                 <input
                   type="text"
                   value={editingCategory.name}
                   onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-semibold"
+                  className="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-semibold bg-white dark:bg-slate-700 dark:text-slate-100"
                   placeholder="Masukkan nama kategori"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-lg font-bold text-slate-700 mb-3">
+                <label className="block text-lg font-bold text-slate-700 dark:text-slate-200 mb-3">
                   Warna
                 </label>
                 <div className="grid grid-cols-5 gap-3">
@@ -397,7 +397,7 @@ const Settings: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setEditingCategory(null)}
-                  className="px-6 py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-all duration-300 font-bold border-2 border-slate-200 hover:border-slate-300 button-press focus-ring"
+                  className="px-6 py-3 bg-slate-100 dark:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-500 transition-all duration-300 font-bold border-2 border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 button-press focus-ring"
                 >
                   Batal
                 </button>
