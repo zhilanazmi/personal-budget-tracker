@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogIn, UserPlus, Mail, Lock, Eye, EyeOff, Wallet } from 'lucide-react';
+import { LogIn, UserPlus, Mail, Lock, Eye, EyeOff, Wallet, Check, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Auth: React.FC = () => {
@@ -10,12 +10,66 @@ const Auth: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
   const { signIn, signUp } = useAuth();
+
+  // Password validation regex patterns
+  const passwordValidation = {
+    minLength: /.{8,}/, // minimum 8 characters
+    hasUpperCase: /[A-Z]/, // at least one uppercase letter
+    hasLowerCase: /[a-z]/, // at least one lowercase letter
+    hasNumber: /\d/, // at least one number
+  };
+
+  // Validate password with regex
+  const validatePassword = (password: string) => {
+    const requirements = [
+      { regex: passwordValidation.minLength, message: 'Minimal 8 karakter' },
+      { regex: passwordValidation.hasUpperCase, message: 'Huruf besar (A-Z)' },
+      { regex: passwordValidation.hasLowerCase, message: 'Huruf kecil (a-z)' },
+      { regex: passwordValidation.hasNumber, message: 'Angka (0-9)' },
+    ];
+
+    const failedRequirements = requirements.filter(req => !req.regex.test(password));
+    
+    if (failedRequirements.length > 0) {
+      setPasswordError(`Password harus mengandung: ${failedRequirements.map(req => req.message).join(', ')}`);
+      return false;
+    }
+    
+    setPasswordError('');
+    return true;
+  };
+
+  // Check individual password requirements
+  const getPasswordRequirements = (password: string) => [
+    { text: 'Minimal 8 karakter', met: passwordValidation.minLength.test(password) },
+    { text: 'Huruf besar (A-Z)', met: passwordValidation.hasUpperCase.test(password) },
+    { text: 'Huruf kecil (a-z)', met: passwordValidation.hasLowerCase.test(password) },
+    { text: 'Angka (0-9)', met: passwordValidation.hasNumber.test(password) },
+  ];
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    
+    // Only validate if it's sign up mode and password is not empty
+    if (isSignUp && newPassword) {
+      validatePassword(newPassword);
+    } else {
+      setPasswordError('');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email || !password) {
+      return;
+    }
+
+    // Validate password for sign up
+    if (isSignUp && !validatePassword(password)) {
       return;
     }
 
@@ -42,6 +96,7 @@ const Auth: React.FC = () => {
     setConfirmPassword('');
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setPasswordError('');
   };
 
   const toggleMode = () => {
@@ -117,11 +172,14 @@ const Auth: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-16 pr-16 py-4 border-2 border-slate-200 dark:border-slate-600 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-lg font-medium bg-white/60 dark:bg-slate-800/60 dark:text-slate-200 backdrop-blur-sm input-focus transition-all duration-200"
+                  onChange={handlePasswordChange}
+                  className={`w-full pl-16 pr-16 py-4 border-2 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 text-lg font-medium bg-white/60 dark:bg-slate-800/60 dark:text-slate-200 backdrop-blur-sm input-focus transition-all duration-200 ${
+                    passwordError 
+                      ? 'border-red-500 dark:border-red-400 focus:border-red-500' 
+                      : 'border-slate-200 dark:border-slate-600 focus:border-emerald-500'
+                  }`}
                   placeholder="Masukkan password"
                   required
-                  minLength={6}
                 />
                 <button
                   type="button"
@@ -131,6 +189,32 @@ const Auth: React.FC = () => {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              
+              {/* Password Requirements (only show for sign up) */}
+              {isSignUp && password && (
+                <div className="mt-3 space-y-2">
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Persyaratan Password:</p>
+                  <div className="grid grid-cols-1 gap-1">
+                    {getPasswordRequirements(password).map((req, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        {req.met ? (
+                          <Check className="w-4 h-4 text-green-500" />
+                        ) : (
+                          <X className="w-4 h-4 text-red-500" />
+                        )}
+                        <span className={`text-sm ${req.met ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                          {req.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Password Error Message */}
+              {passwordError && (
+                <p className="text-red-600 dark:text-red-400 text-sm mt-2 font-medium">{passwordError}</p>
+              )}
             </div>
 
             {/* Confirm Password (Sign Up only) */}
@@ -170,7 +254,7 @@ const Auth: React.FC = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading || (isSignUp && password !== confirmPassword)}
+              disabled={isLoading || (isSignUp && (password !== confirmPassword || passwordError))}
               className="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-blue-600 text-white rounded-2xl hover:from-emerald-600 hover:to-blue-700 transition-all duration-300 font-bold text-lg button-press focus-ring shadow-lg shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
