@@ -3,7 +3,7 @@ import { Transaction, Category, Account, DateRange, ReportData } from '../types'
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { isDateInRange } from '../utils/dateUtils';
+import { isDateInRange, formatCurrency } from '../utils/dateUtils';
 
 export const useBudget = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -581,6 +581,119 @@ export const useBudget = () => {
     };
   };
 
+  const getSpendingTrends = (months: number = 6) => {
+    const now = new Date();
+    const trends = [];
+    
+    for (let i = months - 1; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const nextDate = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+      
+      const monthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate >= date && tDate < nextDate;
+      });
+
+      const monthIncome = monthTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const monthExpenses = monthTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const categoryBreakdown = monthTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((acc, t) => {
+          acc[t.category] = (acc[t.category] || 0) + t.amount;
+          return acc;
+        }, {} as { [key: string]: number });
+
+      trends.push({
+        month: date.toLocaleDateString('id-ID', { 
+          year: 'numeric', 
+          month: 'long' 
+        }),
+        monthShort: date.toLocaleDateString('id-ID', { 
+          month: 'short' 
+        }),
+        income: monthIncome,
+        expenses: monthExpenses,
+        balance: monthIncome - monthExpenses,
+        categoryBreakdown,
+        transactionCount: monthTransactions.length,
+      });
+    }
+
+    // Calculate insights
+    const insights = [];
+    const currentMonth = trends[trends.length - 1];
+    const previousMonth = trends[trends.length - 2];
+
+    if (currentMonth && previousMonth) {
+      const expenseChange = ((currentMonth.expenses - previousMonth.expenses) / previousMonth.expenses) * 100;
+      const incomeChange = ((currentMonth.income - previousMonth.income) / previousMonth.income) * 100;
+
+      if (Math.abs(expenseChange) > 5) {
+        insights.push({
+          type: expenseChange > 0 ? 'warning' : 'success',
+          message: `Pengeluaran ${expenseChange > 0 ? 'naik' : 'turun'} ${Math.abs(expenseChange).toFixed(1)}% dari bulan lalu`,
+        });
+      }
+
+      if (Math.abs(incomeChange) > 5) {
+        insights.push({
+          type: incomeChange > 0 ? 'success' : 'warning',
+          message: `Pemasukan ${incomeChange > 0 ? 'naik' : 'turun'} ${Math.abs(incomeChange).toFixed(1)}% dari bulan lalu`,
+        });
+      }
+
+      // Find biggest category changes
+      Object.keys(currentMonth.categoryBreakdown).forEach(category => {
+        const current = currentMonth.categoryBreakdown[category] || 0;
+        const previous = previousMonth.categoryBreakdown[category] || 0;
+        
+        if (previous > 0) {
+          const change = ((current - previous) / previous) * 100;
+          if (Math.abs(change) > 20 && current > 100000) { // Significant change in categories with substantial amounts
+            insights.push({
+              type: change > 0 ? 'info' : 'success',
+              message: `${category} ${change > 0 ? 'naik' : 'turun'} ${Math.abs(change).toFixed(1)}% bulan ini`,
+            });
+          }
+        }
+      });
+    }
+
+    // Find spending patterns
+    const avgExpenses = trends.reduce((sum, t) => sum + t.expenses, 0) / trends.length;
+    const highestMonth = trends.reduce((max, t) => t.expenses > max.expenses ? t : max, trends[0]);
+    const lowestMonth = trends.reduce((min, t) => t.expenses < min.expenses ? t : min, trends[0]);
+
+    if (currentMonth && currentMonth.expenses > avgExpenses * 1.2) {
+      insights.push({
+        type: 'warning',
+        message: `Bulan ini pengeluaran ${((currentMonth.expenses / avgExpenses - 1) * 100).toFixed(1)}% di atas rata-rata`,
+      });
+    }
+
+    insights.push({
+      type: 'info',
+      message: `Pengeluaran tertinggi di ${highestMonth.month}: ${formatCurrency(highestMonth.expenses)}`,
+    });
+
+    return {
+      trends,
+      insights: insights.slice(0, 4), // Limit to 4 insights
+      summary: {
+        avgMonthlyIncome: trends.reduce((sum, t) => sum + t.income, 0) / trends.length,
+        avgMonthlyExpenses: trends.reduce((sum, t) => sum + t.expenses, 0) / trends.length,
+        highestExpenseMonth: highestMonth,
+        lowestExpenseMonth: lowestMonth,
+      }
+    };
+  };
+
   return {
     transactions,
     categories,
@@ -596,5 +709,6 @@ export const useBudget = () => {
     updateAccount,
     deleteAccount,
     getReportData,
+    getSpendingTrends,
   };
 };

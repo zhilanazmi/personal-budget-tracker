@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Calendar, TrendingUp, PieChart, ChevronDown, BarChart3, X, Eye, MapPin, CreditCard, Clock } from 'lucide-react';
-import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { Calendar, TrendingUp, PieChart, ChevronDown, BarChart3, X, Eye, MapPin, CreditCard, Clock, LineChart, AlertTriangle, CheckCircle, Info } from 'lucide-react';
+import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart as RechartsLineChart, Line } from 'recharts';
 import { useBudget } from '../hooks/useBudget';
 import { formatCurrency, getDateRange, formatDate } from '../utils/dateUtils';
 import { DateRange } from '../types';
 
 const Reports: React.FC = () => {
-  const { getReportData, categories, loading, accounts } = useBudget();
+  const { getReportData, getSpendingTrends, categories, loading, accounts } = useBudget();
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month' | 'year' | 'custom'>('month');
   const [customRange, setCustomRange] = useState<DateRange>({
     from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -15,6 +15,7 @@ const Reports: React.FC = () => {
   const [showCustomRange, setShowCustomRange] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategoryDetail, setShowCategoryDetail] = useState(false);
+  const [showTrendsView, setShowTrendsView] = useState(false);
 
   // Handle ESC key to close modal
   React.useEffect(() => {
@@ -55,6 +56,7 @@ const Reports: React.FC = () => {
   };
 
   const reportData = getReportData(getDateRangeForPeriod());
+  const spendingTrends = getSpendingTrends(6); // Get 6 months of trends
 
   // Get transactions for selected category
   const getCategoryTransactions = (categoryName: string) => {
@@ -232,6 +234,277 @@ const Reports: React.FC = () => {
     );
   };
 
+  const SpendingTrendsView = () => {
+    const lineChartData = spendingTrends.trends.map(trend => ({
+      month: trend.monthShort,
+      fullMonth: trend.month,
+      income: trend.income,
+      expenses: trend.expenses,
+      balance: trend.balance,
+    }));
+
+    const getInsightIcon = (type: string) => {
+      switch (type) {
+        case 'warning': return AlertTriangle;
+        case 'success': return CheckCircle;
+        case 'info': return Info;
+        default: return Info;
+      }
+    };
+
+    const getInsightColor = (type: string) => {
+      switch (type) {
+        case 'warning': return 'text-orange-600 bg-orange-50 border-orange-200';
+        case 'success': return 'text-emerald-600 bg-emerald-50 border-emerald-200';
+        case 'info': return 'text-blue-600 bg-blue-50 border-blue-200';
+        default: return 'text-slate-600 bg-slate-50 border-slate-200';
+      }
+    };
+
+    const TrendTooltip = ({ active, payload, label }: any) => {
+      if (active && payload && payload.length) {
+        return (
+          <div className="bg-white p-4 rounded-xl shadow-lg border border-slate-200">
+            <p className="font-semibold text-slate-800 mb-2">{
+              spendingTrends.trends.find(t => t.monthShort === label)?.month || label
+            }</p>
+            {payload.map((item: any, index: number) => (
+              <div key={index} className="flex items-center space-x-2">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="text-sm text-slate-600 capitalize">{item.dataKey}:</span>
+                <span className="font-bold" style={{ color: item.color }}>
+                  {formatCurrency(item.value)}
+                </span>
+              </div>
+            ))}
+          </div>
+        );
+      }
+      return null;
+    };
+
+    return (
+      <div className="space-y-8">
+        {/* Trends Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="p-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg">
+              <LineChart className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-3xl font-bold text-slate-800">Tren Pengeluaran 6 Bulan</h3>
+          </div>
+          <button
+            onClick={() => setShowTrendsView(false)}
+            className="px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-2xl font-semibold transition-colors duration-200 button-press focus-ring"
+          >
+            Kembali ke Laporan
+          </button>
+        </div>
+
+        {/* Smart Insights */}
+        {spendingTrends.insights.length > 0 && (
+          <div className="glass-effect rounded-3xl p-8 border border-white/20">
+            <h4 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
+              <Info className="w-6 h-6 mr-3 text-blue-600" />
+              Wawasan Cerdas
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {spendingTrends.insights.map((insight, index) => {
+                const IconComponent = getInsightIcon(insight.type);
+                return (
+                  <div 
+                    key={index}
+                    className={`p-4 rounded-2xl border-2 ${getInsightColor(insight.type)} fade-in`}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <IconComponent className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                      <p className="font-semibold text-sm leading-relaxed">
+                        {insight.message}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Line Chart */}
+        <div className="glass-effect rounded-3xl p-8 border border-white/20">
+          <h4 className="text-xl font-bold text-slate-800 mb-6 text-center">
+            Grafik Tren Pemasukan vs Pengeluaran
+          </h4>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsLineChart data={lineChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis 
+                  dataKey="month" 
+                  tick={{ fontSize: 12 }}
+                  stroke="#64748b"
+                />
+                <YAxis 
+                  tick={{ fontSize: 12 }}
+                  tickFormatter={(value) => formatCurrency(value).replace('Rp', 'Rp ')}
+                  stroke="#64748b"
+                />
+                <Tooltip content={<TrendTooltip />} />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="income" 
+                  stroke="#10b981" 
+                  strokeWidth={3}
+                  name="Pemasukan"
+                  dot={{ fill: '#10b981', strokeWidth: 2, r: 6 }}
+                  activeDot={{ r: 8, fill: '#10b981' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="expenses" 
+                  stroke="#ef4444" 
+                  strokeWidth={3}
+                  name="Pengeluaran"
+                  dot={{ fill: '#ef4444', strokeWidth: 2, r: 6 }}
+                  activeDot={{ r: 8, fill: '#ef4444' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="balance" 
+                  stroke="#8b5cf6" 
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  name="Saldo Bersih"
+                  dot={{ fill: '#8b5cf6', strokeWidth: 2, r: 4 }}
+                />
+              </RechartsLineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Summary Statistics */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="glass-effect rounded-3xl p-6 border border-white/20 fade-in">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-600 mb-2 uppercase tracking-wide">
+                Rata-rata Pemasukan
+              </p>
+              <p className="text-2xl font-bold text-emerald-600">
+                {formatCurrency(spendingTrends.summary.avgMonthlyIncome)}
+              </p>
+            </div>
+          </div>
+
+          <div className="glass-effect rounded-3xl p-6 border border-white/20 fade-in" style={{ animationDelay: '100ms' }}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl shadow-lg">
+                <TrendingUp className="w-6 h-6 text-white transform rotate-180" />
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-600 mb-2 uppercase tracking-wide">
+                Rata-rata Pengeluaran
+              </p>
+              <p className="text-2xl font-bold text-red-600">
+                {formatCurrency(spendingTrends.summary.avgMonthlyExpenses)}
+              </p>
+            </div>
+          </div>
+
+          <div className="glass-effect rounded-3xl p-6 border border-white/20 fade-in" style={{ animationDelay: '200ms' }}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl shadow-lg">
+                <Calendar className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-600 mb-2 uppercase tracking-wide">
+                Pengeluaran Tertinggi
+              </p>
+              <p className="text-lg font-bold text-orange-600">
+                {spendingTrends.summary.highestExpenseMonth.monthShort}
+              </p>
+              <p className="text-sm text-slate-500">
+                {formatCurrency(spendingTrends.summary.highestExpenseMonth.expenses)}
+              </p>
+            </div>
+          </div>
+
+          <div className="glass-effect rounded-3xl p-6 border border-white/20 fade-in" style={{ animationDelay: '300ms' }}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                <Calendar className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-600 mb-2 uppercase tracking-wide">
+                Pengeluaran Terendah
+              </p>
+              <p className="text-lg font-bold text-blue-600">
+                {spendingTrends.summary.lowestExpenseMonth.monthShort}
+              </p>
+              <p className="text-sm text-slate-500">
+                {formatCurrency(spendingTrends.summary.lowestExpenseMonth.expenses)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Monthly Breakdown Table */}
+        <div className="glass-effect rounded-3xl p-8 border border-white/20">
+          <h4 className="text-xl font-bold text-slate-800 mb-6">Rincian Bulanan</h4>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-slate-200">
+                  <th className="text-left py-4 px-4 font-bold text-slate-700">Bulan</th>
+                  <th className="text-right py-4 px-4 font-bold text-slate-700">Pemasukan</th>
+                  <th className="text-right py-4 px-4 font-bold text-slate-700">Pengeluaran</th>
+                  <th className="text-right py-4 px-4 font-bold text-slate-700">Saldo</th>
+                  <th className="text-center py-4 px-4 font-bold text-slate-700">Transaksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {spendingTrends.trends.map((trend, index) => (
+                  <tr 
+                    key={trend.month} 
+                    className="border-b border-slate-100 hover:bg-slate-50 transition-colors duration-200 fade-in"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <td className="py-4 px-4 font-semibold text-slate-800">{trend.month}</td>
+                    <td className="py-4 px-4 text-right font-bold text-emerald-600">
+                      {formatCurrency(trend.income)}
+                    </td>
+                    <td className="py-4 px-4 text-right font-bold text-red-600">
+                      {formatCurrency(trend.expenses)}
+                    </td>
+                    <td className={`py-4 px-4 text-right font-bold ${
+                      trend.balance >= 0 ? 'text-emerald-600' : 'text-red-600'
+                    }`}>
+                      {formatCurrency(trend.balance)}
+                    </td>
+                    <td className="py-4 px-4 text-center text-slate-600 font-medium">
+                      {trend.transactionCount}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const getPeriodLabel = () => {
     switch (selectedPeriod) {
       case 'today': return 'Hari Ini';
@@ -243,18 +516,36 @@ const Reports: React.FC = () => {
     }
   };
 
+  // Show trends view if selected
+  if (showTrendsView) {
+    return (
+      <div className="space-y-8">
+        <SpendingTrendsView />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center sm:text-left fade-in">
-        <div className="flex items-center space-x-4 justify-center sm:justify-start mb-4">
-          <div className="p-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-lg">
-            <BarChart3 className="w-8 h-8 text-white" />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+          <div className="flex items-center space-x-4 justify-center sm:justify-start">
+            <div className="p-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-lg">
+              <BarChart3 className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Laporan</h2>
+              <p className="text-slate-600 text-lg sm:text-base font-medium">Analisis pola pengeluaran dan tren keuangan</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-4xl sm:text-3xl font-bold text-slate-800 tracking-tight">Laporan</h2>
-            <p className="text-slate-600 text-lg sm:text-base font-medium">Analisis pola pengeluaran dan tren keuangan</p>
-          </div>
+          <button
+            onClick={() => setShowTrendsView(true)}
+            className="flex items-center space-x-3 px-6 py-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-2xl hover:from-purple-600 hover:to-pink-700 transition-all duration-300 font-bold shadow-lg shadow-purple-500/30 button-press focus-ring"
+          >
+            <LineChart className="w-5 h-5" />
+            <span>Lihat Tren</span>
+          </button>
         </div>
       </div>
 
