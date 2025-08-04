@@ -101,24 +101,34 @@ Berikan jawaban yang singkat, jelas, dan bermanfaat. Jika pengguna menanyakan fi
       role: item.sender === 'user' ? 'user' : 'model',
       parts: [{ text: item.text }]
     }));
-    
-    // Tambahkan prompt awal jika tidak ada riwayat
-    const initialHistory = formattedHistory.length > 0 ? formattedHistory : [
-      {
-        role: "user",
-        parts: [{ text: "Perkenalkan dirimu sebagai asisten keuangan FinFlow" }],
-      },
-      {
-        role: "model",
-        parts: [{ text: "Halo! Saya adalah FinFlow Assistant, asisten keuangan pribadi Anda di aplikasi FinFlow. Saya memiliki pengetahuan mendalam tentang aplikasi ini dan siap membantu Anda dengan pertanyaan seputar penggunaan aplikasi, pengelolaan keuangan, budgeting, tips menghemat, dan banyak lagi. Apa yang bisa saya bantu hari ini?" }],
-      },
-    ];
-    
+
+    let finalHistory = [];
+    if (formattedHistory.length > 0) {
+      if (formattedHistory[0].role !== 'user') {
+        finalHistory = [
+          {
+            role: "user",
+            parts: [{ text: "Perkenalkan dirimu sebagai asisten keuangan FinFlow" }],
+          },
+          ...formattedHistory
+        ];
+      } else {
+        finalHistory = formattedHistory;
+      }
+    } else {
+      finalHistory = [
+        {
+          role: "user",
+          parts: [{ text: "Perkenalkan dirimu sebagai asisten keuangan FinFlow" }],
+        }
+      ];
+    }
+
     const chat = model.startChat({
-      history: initialHistory,
+      history: finalHistory,
       generationConfig: {
         maxOutputTokens: 800,
-        temperature: 0.2, // Lebih rendah untuk jawaban yang lebih konsisten dan faktual
+        temperature: 0.2,
       },
     });
 
