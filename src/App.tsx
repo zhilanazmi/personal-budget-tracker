@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, LogOut } from 'lucide-react';
 import { useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
@@ -18,6 +18,9 @@ import Settings from './components/Settings';
 import { QuickActionButton } from './components/QuickActionButton';
 import Toast from './components/Toast';
 import Auth from './components/Auth';
+import ChatBot from './components/ChatBot';
+import { useBudget } from './hooks/useBudget';
+import { initFinanceDataProvider } from './lib/financeDataProvider';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -30,6 +33,14 @@ function AppContent() {
     accountId?: string;
   } | null>(null);
   const { user, loading, signOut } = useAuth();
+  const budgetInstance = useBudget();
+  
+  // Inisialisasi financeDataProvider dengan instance useBudget
+  useEffect(() => {
+    if (budgetInstance && !budgetInstance.loading) {
+      initFinanceDataProvider(budgetInstance);
+    }
+  }, [budgetInstance, budgetInstance?.loading]);
 
   // Close sidebar when tab changes on mobile
   const handleTabChange = (tab: string) => {
@@ -38,7 +49,7 @@ function AppContent() {
   };
 
   // Handle opening transaction form with template
-  const handleTransactionFormOpen = (type?: 'income' | 'expense', template?: {
+  const handleTransactionFormOpen = (_type?: 'income' | 'expense', template?: {
     type: 'income' | 'expense';
     amount?: number;
     category: string;
@@ -190,6 +201,10 @@ function AppContent() {
         onTransactionFormOpen={handleTransactionFormOpen}
         onTransferFormOpen={handleTransferFormOpen}
       />
+
+      {/* Floating ChatBot */}
+      {user && <ChatBot position="floating" />}
+
 
       {/* Global Footer */}
       <footer className="glass-effect dark:glass-effect-dark border-t border-white/20 dark:border-slate-700/50 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 mt-auto">

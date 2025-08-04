@@ -684,7 +684,7 @@ const Help: React.FC = () => {
 
       {/* Manual Sections */}
       <div className="space-y-4 fade-in" style={{ animationDelay: '300ms' }}>
-        {filteredSections.map((section, index) => {
+        {filteredSections.map((section) => {
           const Icon = section.icon;
           const isActive = activeSection === section.id;
           
@@ -777,8 +777,11 @@ const Help: React.FC = () => {
             <span className="text-white text-2xl">💬</span>
           </div>
           <h3 className="text-xl font-bold text-slate-800 mb-2">Butuh Bantuan Lebih Lanjut?</h3>
-          <p className="text-slate-600">
+          <p className="text-slate-600 mb-4">
             Jika ada fitur yang belum jelas atau mengalami kendala, jangan ragu untuk menghubungi tim support.
+          </p>
+          <p className="text-slate-600">
+            Kami siap membantu Anda mengoptimalkan penggunaan aplikasi FinFlow untuk pengelolaan keuangan yang lebih baik.
           </p>
         </div>
       </div>

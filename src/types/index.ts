@@ -42,3 +42,11 @@ export interface ReportData {
   categoryBreakdown: { [key: string]: number };
   accountBalances: { [key: string]: number };
 }
+
+// Tambahkan tipe untuk ChatBot
+export interface ChatMessage {
+  id: string;
+  text: string;
+  sender: 'user' | 'bot';
+  timestamp: Date;
+}
